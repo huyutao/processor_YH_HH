@@ -20,7 +20,7 @@ module alu_fpga (
 
   alu_if aluif();
   // rf
-  alu RF(aluif);
+  alu ALU(aluif);
   import cpu_types_pkg::*;
   word_t temp_b;
 

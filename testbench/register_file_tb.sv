@@ -28,7 +28,7 @@ module register_file_tb;
   // interface
   register_file_if rfif ();
   // test program
-  test PROG ();
+  test PROG (rfif,nRST,CLK);
   // DUT
 `ifndef MAPPED
   register_file DUT(CLK, nRST, rfif);
@@ -48,5 +48,45 @@ module register_file_tb;
 
 endmodule
 
-program test;
+program test(register_file_if.tb rfif, output logic nRST, input logic CLK);
+  int v1 = 1;
+  int v2 = 4721;
+  int v3 = 25119;
+
+  parameter PERIOD = 10;
+
+  initial begin
+
+  nRST = 0;
+  #(PERIOD*5);
+  nRST = 1;
+  rfif.rsel1 = 5'b0;
+  rfif.rsel2 = 5'b1;
+  rfif.wsel = 5'b1;
+  rfif.wdat = v1;
+  rfif.WEN = 1;
+  #(PERIOD*5);
+  rfif.rsel1 = 5'b1;
+  rfif.rsel2 = 5'b11;
+  rfif.wsel = 5'b11;
+  rfif.wdat = v2;
+  rfif.WEN = 1;
+  #(PERIOD*2);
+  rfif.WEN = 0;
+  rfif.rsel1 = 5'b11;
+  rfif.rsel2 = 5'b100;
+  rfif.wsel = 5'b100;
+  rfif.wdat = v3;
+  #(PERIOD*2);
+  rfif.rsel2 = 5'b1;
+  #(PERIOD*2);
+  rfif.rsel1 = 5'b100;
+  rfif.wsel = 5'b100;
+  rfif.wdat = v3;
+  rfif.WEN = 1;
+  #(PERIOD*2);
+  rfif.WEN = 1;
+  rfif.rsel2 = 5'b100;
+  end
+
 endprogram
