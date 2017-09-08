@@ -5,11 +5,11 @@
   org 0x0000
   ori    $29, $0, 0xFFFC
   ori    $28, $0, 0xFFF8
-  addi   $1, $0, 3
+  addi   $1, $0, 2
   push   $1
   addi   $1, $0, 4
   push   $1
-  addi   $1, $0, 5
+  addi   $1, $0, 15
   push   $1
   jal mult
   halt

@@ -4,9 +4,9 @@
 
   org 0x0000
   ori    $29, $0, 0xFFFC
-  addi   $1, $0, 3
+  addi   $1, $0, 5
   push   $1
-  addi   $1, $0, 4
+  addi   $1, $0, 3
   push   $1
   # $1 first operand $2 second operand
   pop    $2            
