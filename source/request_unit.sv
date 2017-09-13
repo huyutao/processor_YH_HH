@@ -15,17 +15,25 @@ module request_unit (
 
 always @(posedge CLK, negedge nRST)
 begin
-	if (1'b0 == nRST || ruif.d_hit == 1)
+	if (!nRST)
 	begin
 		ruif.d_ren <= 0;
 		ruif.d_wen <= 0;
 	end
 	else
 	begin
-		if (ruif.i_hit)
+		if (ruif.d_hit == 1)
 		begin
-			ruif.d_ren <= ruif.cu_dren_out;
-			ruif.d_wen <= ruif.cu_dwen_out;
+			ruif.d_ren <= 0;
+			ruif.d_wen <= 0;
+		end
+		else
+		begin
+			if (ruif.i_hit)
+			begin
+				ruif.d_ren <= ruif.cu_dren_out;
+				ruif.d_wen <= ruif.cu_dwen_out;
+			end
 		end
 	end
 end

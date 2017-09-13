@@ -19,7 +19,7 @@ module program_counter (
   word_t add4_addr,branch_addr,jump_addr,next_addr;
 
   assign add4_addr = pcif.i_addr+4;
-  assign branch_addr = pcif.i_addr+pcif.imm16;
+  assign branch_addr = add4_addr+{pcif.imm16,2'b0};
   assign jump_addr = {pcif.i_addr[31:28],pcif.j_addr26,2'b0};
 
   always @(posedge CLK, negedge nRST)
