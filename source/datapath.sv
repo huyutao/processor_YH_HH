@@ -23,17 +23,27 @@
 module datapath (
   input logic CLK, nRST,
   datapath_cache_if.dp dpif
-
 );
   // import types
   import cpu_types_pkg::*;
   import diaosi_types_pkg::*;
 
+  // pc init
+  parameter PC_INIT = 0;
+
+  //interface
   control_unit_if cuif();
   request_unit_if ruif();
   program_counter_if pcif();
   register_file_if rfif();
   alu_if aluif ();
+
+  //DUT
+  control_unit CU(CLK, nRST,cuif);
+  request_unit RU(CLK, nRST,ruif);
+  program_counter PC(CLK, nRST,pcif);
+  register_file RF(CLK, nRST,rfif);
+  alu ALU (aluif);
 
   /*
   modport dp (
@@ -50,7 +60,7 @@ module datapath (
   );
 
   modport ru (
-    input   d_hit,cu_dren_out,cu_dwen_out,
+    input   i_hit,d_hit,cu_dren_out,cu_dwen_out,
     output  d_ren,d_wen
   );
 
@@ -83,9 +93,10 @@ module datapath (
   assign dpif.imemREN = cuif.i_ren;
 
   //request unit signal
+  assign ruif.i_hit = dpif.ihit;
   assign ruif.d_hit = dpif.dhit;
   assign ruif.cu_dren_out = cuif.ru_dren_out;
-  assign ruif.cu_dwen_out = dpif.ru_dwen_out;
+  assign ruif.cu_dwen_out = cuif.ru_dwen_out;
   assign dpif.dmemREN = ruif.d_ren;
   assign dpif.dmemWEN = ruif.d_wen;
 

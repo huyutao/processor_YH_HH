@@ -21,7 +21,7 @@ interface program_counter_if;
 
   // pc file ports
   modport pc (
-    input   imm16,j_addr26,jr,PCsrc,pc_next,
+    input   imm16,j_addr26,jr,PCSrc,pc_next,
     output  i_addr
   );
   // register file tb

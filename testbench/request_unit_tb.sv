@@ -22,6 +22,7 @@ module request_unit_tb;
   request_unit DUT(CLK, nRST, ruif);
 `else
   request_unit DUT(
+    .\ruif.i_hit (ruif.i_hit),
     .\ruif.d_hit (ruif.d_hit),
     .\ruif.cu_dren_out (ruif.cu_dren_out),
     .\ruif.cu_dwen_out (ruif.cu_dwen_out),
@@ -46,6 +47,7 @@ program test(request_unit_if.tb ruif, output logic nRST, input logic CLK);
   ruif.cu_dren_out = 0;
   ruif.cu_dwen_out = 0;
   ruif.d_hit = 0; 
+  ruif.i_hit = 0; 
 
   #(PERIOD*2);
   nRST = 1;

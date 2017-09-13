@@ -32,7 +32,7 @@ assign funct = funct_t'(cuif.instr[5:0]);
 assign cuif.shamt = cuif.instr[10:6];
 assign cuif.imm16 = cuif.instr[15:0];
 assign cuif.j_addr26 = cuif.instr[25:0];
-assign cuif.lui = {16'b0,cuif.imm16};
+assign cuif.lui = {cuif.imm16,16'b0};
 
 
 always @(posedge CLK, negedge nRST)
@@ -43,23 +43,23 @@ begin
 	end
 	else
 	begin
-		cuif.halt <= next_halt;
+		if (next_halt) cuif.halt <= 1;
 	end
 end
 
 
 always_comb 
 begin
-	cuif.i_ren = (cuif.i_hit || cuif.d_hit);
-	cuif.ru_dren_out = (cuif.i_hit && opcode == LW);
-	cuif.ru_dwen_out = (cuif.i_hit && opcode == SW);
+	cuif.i_ren = (cuif.halt)?0:1;
+	cuif.ru_dren_out = (opcode == LW);
+	cuif.ru_dwen_out = (opcode == SW);
 
-	cuif.pc_next = cuif.i_hit || cuif.d_hit;
+	cuif.pc_next = cuif.i_hit;
 	cuif.alu_op = ALU_SLL;
 
     cuif.wsel = (opcode==RTYPE)?rd:rt;
 	cuif.rsel1 = rs;
-	cuif.rsel2 = (opcode==RTYPE || opcode==BEQ || opcode==BNE)?rt:0;
+	cuif.rsel2 = (opcode==RTYPE || opcode==BEQ || opcode==BNE || opcode==SW)?rt:0;
 	cuif.wen = 1;
 	next_halt = 0;
 
@@ -71,7 +71,7 @@ begin
     // RDAT2_DIAOSI, SHAMT_DIAOSI, EXT_DIAOSI
     if(opcode==RTYPE || opcode==BNE || opcode==BEQ) 
     begin
-    	if(funct==SLL || funct==SLL)
+    	if(funct==SLL || funct==SRL)
     	begin
     		cuif.ALUSrc = SHAMT_DIAOSI;
     	end
@@ -171,11 +171,13 @@ begin
 	    // itype
 	    BEQ:
 		begin
+			cuif.wen = 0;
 			cuif.alu_op = ALU_SUB;
 			if (cuif.zero_f==1) cuif.PCSrc = BRANCH_DIAOSI;
 		end
 	    BNE:
 		begin
+			cuif.wen = 0;
 			cuif.alu_op = ALU_SUB;
 			if (cuif.zero_f==0) cuif.PCSrc = BRANCH_DIAOSI;
 		end
@@ -185,11 +187,12 @@ begin
 		end
 		LW:
 		begin
+			cuif.W_mux = DATA_DIAOSI;
 			cuif.alu_op = ALU_ADD;
 		end
 		SW:
 		begin
-			cuif.W_mux = DATA_DIAOSI;
+			cuif.wen = 0;
 			cuif.alu_op = ALU_ADD;
 		end
 	    SLTI:

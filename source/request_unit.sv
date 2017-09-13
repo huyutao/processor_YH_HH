@@ -1,7 +1,7 @@
 
 `include "request_unit_if.vh"
 
-module request_unit(
+module request_unit (
 	input CLK,    // Clock
 	input nRST,  // Asynchronous reset active low
 	request_unit_if.ru ruif
@@ -12,23 +12,23 @@ module request_unit(
 );
 
 
-logic next_d_ren,next_d_wen;
-
-assign next_d_ren = (ruif.cu_dren_out && ~ruif.d_hit);
-assign next_d_wen = (ruif.cu_dwen_out && ~ruif.d_hit);
 
 always @(posedge CLK, negedge nRST)
 begin
-	if (1'b0 == nRST)
+	if (1'b0 == nRST || ruif.d_hit == 1)
 	begin
 		ruif.d_ren <= 0;
 		ruif.d_wen <= 0;
 	end
 	else
 	begin
-		ruif.d_ren <= next_d_ren;
-		ruif.d_wen <= next_d_wen;
+		if (ruif.i_hit)
+		begin
+			ruif.d_ren <= ruif.cu_dren_out;
+			ruif.d_wen <= ruif.cu_dwen_out;
+		end
 	end
 end
+
 
 endmodule
