@@ -12,8 +12,8 @@ package diaosi_types_pkg;
 	ADD4_DIAOSI,JUMP_DIAOSI,JR_DIAOSI,BRANCH_DIAOSI
 	} PCSrc_t;
 
-	typedef enum logic [2:0] {
-	ALUOUT_DIAOSI, R31_DIAOSI, LUI_DIAOSI, DATA_DIAOSI, NEGF_DIAOSI
+	typedef enum logic [1:0] {
+	ALUOUT_DIAOSI, R31_DIAOSI, LUI_DIAOSI, DATA_DIAOSI
 	} W_mux_t;
 
 	typedef enum logic [1:0] {
@@ -26,3 +26,4 @@ package diaosi_types_pkg;
 
 
 endpackage
+`endif

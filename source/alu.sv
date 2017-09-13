@@ -3,7 +3,7 @@
 `include "cpu_types_pkg.vh"
 
 module alu (
-	alu_if.rf aluif
+	alu_if.af aluif
 	/*
 	  input   aluop, a, b,
       output  out, zero_flag, negative_flag, overflow_flag

@@ -17,7 +17,7 @@ interface alu_if;
   aluop_t   op;
 
   // register file ports
-  modport rf (
+  modport af (
     input   op, a, b,
     output  out, zero_flag, negative_flag, overflow_flag
   );

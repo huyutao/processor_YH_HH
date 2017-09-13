@@ -7,22 +7,27 @@ module control_unit (
 	input nRST,  // Asynchronous reset active low
 	control_unit_if.cu cuif
 	/*
-		instr, zero_f,overflow_f, ru_dhit_in, ru_ihit_in,
+		instr, zero_f,overflow_f, d_hit, i_hit,
 
     	pc_next, alu_op, ru_iren_out, ru_dren_out, ru_dwen_out,
-    wsel,rsel1,rsel2, wen, imm16, j_addr26, shamt, lui, PCsrc, 
-    W_mux, Wsel_mux, ALUSrc, ExtOP
+    wsel,rsel1,rsel2, wen, imm16, j_addr26, shamt, lui, PCSrc, 
+    W_mux, Wsel_mux, ALUSrc, ExtOP, halt
 	  */
 );
 
 import cpu_types_pkg::*;
 import diaosi_types_pkg::*;
 
-assign cuif.opcode = cuif.instr[31:26];
-assign cuif.rs = cuif.instr[25:21];
-assign cuif.rt = cuif.instr[20:16];
-assign cuif.rd = cuif.instr[15:11];
-assign cuif.funct = cuif.instr[5:0];
+funct_t funct;
+opcode_t opcode;
+regbits_t rs,rt,rd;
+logic next_halt;
+
+assign opcode = opcode_t'(cuif.instr[31:26]);
+assign rs = cuif.instr[25:21];
+assign rt = cuif.instr[20:16];
+assign rd = cuif.instr[15:11];
+assign funct = funct_t'(cuif.instr[5:0]);
 
 assign cuif.shamt = cuif.instr[10:6];
 assign cuif.imm16 = cuif.instr[15:0];
@@ -30,151 +35,188 @@ assign cuif.j_addr26 = cuif.instr[25:0];
 assign cuif.lui = {16'b0,cuif.imm16};
 
 
+always @(posedge CLK, negedge nRST)
+begin
+	if (1'b0 == nRST)
+	begin
+		cuif.halt <= 0;
+	end
+	else
+	begin
+		cuif.halt <= next_halt;
+	end
+end
+
+
 always_comb 
 begin
-	cuif.ru_iren_out = 0;
-	cuif.ru_dren_out = 0;
-	cuif.ru_dwen_out = 0;
+	cuif.i_ren = (cuif.i_hit || cuif.d_hit);
+	cuif.ru_dren_out = (cuif.i_hit && opcode == LW);
+	cuif.ru_dwen_out = (cuif.i_hit && opcode == SW);
 
-	cuif.pc_next = 0;
-	cuif.alu_op = 0;
+	cuif.pc_next = cuif.i_hit || cuif.d_hit;
+	cuif.alu_op = ALU_SLL;
 
-    cuif.wsel = cuif.rt;
-	cuif.rsel1 = cuif.rs;
-	cuif.rsel2 = 0;
+    cuif.wsel = (opcode==RTYPE)?rd:rt;
+	cuif.rsel1 = rs;
+	cuif.rsel2 = (opcode==RTYPE || opcode==BEQ || opcode==BNE)?rt:0;
 	cuif.wen = 1;
+	next_halt = 0;
 
-    cuif.PCsrc = ADD4_DIAOSI;      // ADD4_DIAOSI,JUMP_DIAOSI,JR_DIAOSI,BRANCH_DIAOSI
+    cuif.PCSrc = ADD4_DIAOSI;      // ADD4_DIAOSI,JUMP_DIAOSI,JR_DIAOSI,BRANCH_DIAOSI
     cuif.W_mux = ALUOUT_DIAOSI;    // R31_DIAOSI, LUI_DIAOSI, DATA_DIAOSI, ALUOUT_DIAOSI, NEGF_DIAOSI
-    cuif.ALUSrc = RDAT2_DIAOSI;    // RDAT2_DIAOSI, SHAMT_DIAOSI, EXT_DIAOSI
-    cuif.ExtOP = ZEROEXT_DIAOSI;   // ZEROEXT_DIAOSI, SIGNEXT_DIAOSI
+    //cuif.ALUSrc = RDAT2_DIAOSI;    // RDAT2_DIAOSI, SHAMT_DIAOSI, EXT_DIAOSI
+    cuif.ExtOP = (opcode==ANDI||opcode==ORI||opcode==XORI)?ZEROEXT_DIAOSI:SIGNEXT_DIAOSI;   // ZEROEXT_DIAOSI, SIGNEXT_DIAOSI
+
+    // RDAT2_DIAOSI, SHAMT_DIAOSI, EXT_DIAOSI
+    if(opcode==RTYPE || opcode==BNE || opcode==BEQ) 
+    begin
+    	if(funct==SLL || funct==SLL)
+    	begin
+    		cuif.ALUSrc = SHAMT_DIAOSI;
+    	end
+    	else
+    	begin
+    		cuif.ALUSrc = RDAT2_DIAOSI;
+    	end
+    end
+    else
+    begin	
+    	cuif.ALUSrc = EXT_DIAOSI;
+    end
+
+    if(cuif.instr==32'hFFFFFFFF)         // HALT
+    begin
+    	next_halt = 1;
+    end
+    else
+    begin
+    	if(cuif.overflow_f)
+    	begin
+	    	if(opcode==RTYPE && (funct==SUB || funct==ADD))
+	    	begin
+	    		next_halt = 1;
+	    	end
+	    	if(opcode==ADDI)
+	    	begin
+	    		next_halt = 1;
+	    	end
+	    end
+    end
 
 
-	casez(cuif.opcode)
+	casez(opcode)
 		RTYPE:
 		begin
-			cuif.wsel = cuif.rd;
-			cuif.rsel2 = cuif.rt;
-			casez(cuif.funct)
-			    SLL:begin
+			casez(funct)
+			    SLL:
+			    begin
 			    	cuif.alu_op = ALU_SLL;
-				    cuif.ALUSrc = SHAMT_DIAOSI;
 			    end
-			    SRL:begin
-			    	cuif.alu_op = ALU_SLL;
-				    cuif.ALUSrc = SHAMT_DIAOSI;
+			    SRL:
+			    begin
+			    	cuif.alu_op = ALU_SRL;
 			    end
-			    JR:begin
+			    JR:
+			    begin
 			    	cuif.wen = 0;
-    				cuif.PCsrc = JR_DIAOSI;
+    				cuif.PCSrc = JR_DIAOSI;
 			    end
-			    ADD,ADDU:begin
+			    ADD,ADDU:
+			    begin
 					cuif.alu_op = ALU_ADD;
 			    end
-			    SUB,SUBU:begin
+			    SUB,SUBU:
+			    begin
 			    	cuif.alu_op = ALU_SUB;
 			    end
-			    AND:begin
+			    AND:
+			    begin
 			 		cuif.alu_op = ALU_AND;
 				end
-			    OR:begin
+			    OR:
+			    begin
 			    	cuif.alu_op = ALU_OR;
 			    end
-			    XOR:begin
+			    XOR:
+			    begin
 			    	cuif.alu_op = ALU_XOR;
 			    end
-			    NOR:begin
+			    NOR:
+			    begin
 			    	cuif.alu_op = ALU_NOR;
 			    end
-			    SLT,SLTU:begin
-			    	cuif.alu_op = ALU_SUB;
-			    	cuif.W_mux = NEGF_DIAOSI;
+			    SLT:
+			    begin
+			    	cuif.alu_op = ALU_SLT;
+			    end
+			    SLTU:
+			    begin
+			    	cuif.alu_op = ALU_SLTU;
 			    end
 	 		endcase
 		end
 	    // jtype
-	    J:begin
+	    J:
+	    begin
 			cuif.wen = 0;
-			cuif.PCSrc = JUMP_DIAOSI
+			cuif.PCSrc = JUMP_DIAOSI;
 		end
-	    JAL:begin
-			cuif.PCSrc = JUMP_DIAOSI
-			cuif.W_mux = R31_DIAOSI
+	    JAL:
+	    begin
+			cuif.PCSrc = JUMP_DIAOSI;
+			cuif.W_mux = R31_DIAOSI;
 		end
 
 	    // itype
 	    BEQ:
 		begin
-			cuif.rsel2 = cuif.rt;
-			if (cuif.zero_f): cuif.PCSrc = BRANCH_DIAOSI
+			cuif.alu_op = ALU_SUB;
+			if (cuif.zero_f==1) cuif.PCSrc = BRANCH_DIAOSI;
 		end
 	    BNE:
 		begin
-			cuif.rsel2 = cuif.rt;
-			if (!cuif.zero_f): cuif.PCSrc = BRANCH_DIAOSI
+			cuif.alu_op = ALU_SUB;
+			if (cuif.zero_f==0) cuif.PCSrc = BRANCH_DIAOSI;
 		end
-	    ADDI:
+	    ADDI,ADDIU:
 		begin
-
+			cuif.alu_op = ALU_ADD;
 		end
-	    ADDIU:
+		LW:
 		begin
-
+			cuif.alu_op = ALU_ADD;
+		end
+		SW:
+		begin
+			cuif.W_mux = DATA_DIAOSI;
+			cuif.alu_op = ALU_ADD;
 		end
 	    SLTI:
 		begin
-
+			cuif.alu_op = ALU_SLT;
 		end
-	    SLTIU:
+		SLTIU:
 		begin
-
+			cuif.alu_op = ALU_SLTU;
 		end
 	    ANDI:
 		begin
-
+			cuif.alu_op = ALU_AND;
 		end
 	    ORI:
 		begin
-
+			cuif.alu_op = ALU_OR;
 		end
 	    XORI:
 		begin
-
+			cuif.alu_op = ALU_XOR;
 		end
 	    LUI:
 		begin
-
-		end
-	    LW:
-		begin
-
-		end
-	    LBU:
-		begin
-
-		end
-	    LHU:
-		begin
-
-		end
-	    SB:
-		begin
-
-		end
-	    SH:
-		begin
-
-		end
-	    SW:
-		begin
-
-		end
-	    HALT:
-		begin
-
+			cuif.W_mux = LUI_DIAOSI;
 		end
 	 endcase
 end
-
 
 endmodule
