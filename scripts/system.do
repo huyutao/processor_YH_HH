@@ -5,13 +5,13 @@ add wave -noupdate /system_tb/nRST
 add wave -noupdate /system_tb/DUT/CPU/DP/cuif/instr
 add wave -noupdate /system_tb/DUT/CPU/DP/cuif/zero_f
 add wave -noupdate /system_tb/DUT/CPU/DP/cuif/overflow_f
-add wave -noupdate /system_tb/DUT/CPU/DP/cuif/i_hit
-add wave -noupdate /system_tb/DUT/CPU/DP/cuif/d_hit
+add wave -noupdate -color Yellow -itemcolor Yellow /system_tb/DUT/CPU/DP/cuif/i_hit
+add wave -noupdate -color Yellow -itemcolor Yellow /system_tb/DUT/CPU/DP/cuif/d_hit
 add wave -noupdate /system_tb/DUT/CPU/DP/cuif/pc_next
 add wave -noupdate /system_tb/DUT/CPU/DP/cuif/alu_op
 add wave -noupdate /system_tb/DUT/CPU/DP/cuif/i_ren
-add wave -noupdate /system_tb/DUT/CPU/DP/cuif/ru_dren_out
-add wave -noupdate /system_tb/DUT/CPU/DP/cuif/ru_dwen_out
+add wave -noupdate -color Yellow -itemcolor Yellow /system_tb/DUT/CPU/DP/cuif/ru_dren_out
+add wave -noupdate -color Yellow -itemcolor Yellow /system_tb/DUT/CPU/DP/cuif/ru_dwen_out
 add wave -noupdate /system_tb/DUT/CPU/DP/cuif/wsel
 add wave -noupdate /system_tb/DUT/CPU/DP/cuif/rsel1
 add wave -noupdate /system_tb/DUT/CPU/DP/cuif/rsel2
@@ -50,6 +50,7 @@ add wave -noupdate /system_tb/DUT/CPU/DP/RF/rfif/rsel2
 add wave -noupdate /system_tb/DUT/CPU/DP/RF/rfif/wdat
 add wave -noupdate /system_tb/DUT/CPU/DP/RF/rfif/rdat1
 add wave -noupdate /system_tb/DUT/CPU/DP/RF/rfif/rdat2
+add wave -noupdate /system_tb/DUT/CPU/DP/RF/data
 add wave -noupdate -divider {request unit}
 add wave -noupdate /system_tb/DUT/CPU/DP/ruif/i_hit
 add wave -noupdate /system_tb/DUT/CPU/DP/ruif/d_hit
@@ -58,7 +59,7 @@ add wave -noupdate /system_tb/DUT/CPU/DP/ruif/cu_dwen_out
 add wave -noupdate /system_tb/DUT/CPU/DP/ruif/d_ren
 add wave -noupdate /system_tb/DUT/CPU/DP/ruif/d_wen
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {760000 ps} 0}
+WaveRestoreCursors {{Cursor 1} {232217 ps} 0}
 quietly wave cursor active 1
 configure wave -namecolwidth 150
 configure wave -valuecolwidth 100
@@ -74,4 +75,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits ns
 update
-WaveRestoreZoom {0 ps} {1050 ns}
+WaveRestoreZoom {0 ps} {1068 ns}

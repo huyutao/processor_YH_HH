@@ -23,6 +23,7 @@ opcode_t opcode;
 regbits_t rs,rt,rd;
 logic next_halt;
 
+
 assign opcode = opcode_t'(cuif.instr[31:26]);
 assign rs = cuif.instr[25:21];
 assign rt = cuif.instr[20:16];

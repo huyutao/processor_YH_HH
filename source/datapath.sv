@@ -112,7 +112,7 @@ module datapath (
   assign rfif.wsel = cuif.wsel;
   assign rfif.rsel1 = cuif.rsel1;
   assign rfif.rsel2 = cuif.rsel2;
-  assign rfif.WEN = cuif.wen;
+  assign rfif.WEN = cuif.wen&(dpif.ihit|dpif.dhit);
   assign rfif.wdat = wdat_mux_out;
   assign dpif.dmemstore = rfif.rdat2;
 

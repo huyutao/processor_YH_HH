@@ -1,0 +1,14 @@
+Analysis & Synthesis Status : Successful - Wed Sep 13 17:41:53 2017
+Quartus II 32-bit Version : 13.0.1 Build 232 06/12/2013 SP 1 SJ Full Version
+Revision Name : singlecycle
+Top-level Entity Name : system_fpga
+Family : Cyclone IV E
+Total logic elements : 4,814
+    Total combinational functions : 3,244
+    Dedicated logic registers : 2,128
+Total registers : 2128
+Total pins : 106
+Total virtual pins : 0
+Total memory bits : 530,688
+Embedded Multiplier 9-bit elements : 0
+Total PLLs : 0
