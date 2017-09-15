@@ -9,7 +9,7 @@
   push   $1
   addi   $1, $0, 4
   push   $1
-  addi   $1, $0, 15
+  addi   $1, $0, 3
   push   $1
   jal mult
   halt

@@ -7,7 +7,7 @@ module program_counter (
   program_counter_if.pc pcif
   /*
   input   imm16,j_addr26,jr,PCSrc,pc_next,
-    output  i_addr
+    output  i_addr,jar_addr
     */
 
 );
@@ -21,7 +21,8 @@ module program_counter (
   assign add4_addr = pcif.i_addr+4;
   assign branch_addr = add4_addr+{pcif.imm16,2'b0};
   assign jump_addr = {pcif.i_addr[31:28],pcif.j_addr26,2'b0};
-
+  assign pcif.jar_addr = add4_addr;
+  
   always @(posedge CLK, negedge nRST)
   begin
     if (1'b0 == nRST)
@@ -31,7 +32,9 @@ module program_counter (
     else
     begin
       if (pcif.pc_next)
+      begin
         pcif.i_addr <= next_addr;
+      end
     end
   end
 

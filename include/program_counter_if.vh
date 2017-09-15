@@ -16,13 +16,13 @@ interface program_counter_if;
   PCSrc_t PCSrc;
   logic pc_next;
 
-  word_t i_addr;
+  word_t i_addr,jar_addr;
 
 
   // pc file ports
   modport pc (
     input   imm16,j_addr26,jr,PCSrc,pc_next,
-    output  i_addr
+    output  i_addr,jar_addr
   );
   // register file tb
   /*

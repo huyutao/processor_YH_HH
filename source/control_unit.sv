@@ -58,7 +58,7 @@ begin
 	cuif.pc_next = cuif.i_hit;
 	cuif.alu_op = ALU_SLL;
 
-    cuif.wsel = (opcode==RTYPE)?rd:rt;
+    cuif.wsel = (opcode==RTYPE)?rd:(opcode==JAL)?31:rt;
 	cuif.rsel1 = rs;
 	cuif.rsel2 = (opcode==RTYPE || opcode==BEQ || opcode==BNE || opcode==SW)?rt:0;
 	cuif.wen = 1;

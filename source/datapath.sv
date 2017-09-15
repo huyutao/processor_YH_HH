@@ -66,7 +66,7 @@ module datapath (
 
   modport pc (
     input   imm16,j_addr26,jr,PCSrc,pc_next,
-    output  i_addr
+    output  i_addr,jar_addr
   );
 
   modport rf (
@@ -128,7 +128,7 @@ always_comb
 begin
   casez(cuif.W_mux)
     ALUOUT_DIAOSI: wdat_mux_out = aluif.out;
-    R31_DIAOSI: wdat_mux_out = pcif.i_addr;
+    R31_DIAOSI: wdat_mux_out = pcif.jar_addr;
     LUI_DIAOSI: wdat_mux_out = cuif.lui;
     DATA_DIAOSI: wdat_mux_out = dpif.dmemload;
     default: 
