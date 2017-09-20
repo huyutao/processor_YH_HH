@@ -23,7 +23,7 @@ word_t [31:0] data;
 assign rfif.rdat1 = data[rfif.rsel1];
 assign rfif.rdat2 = data[rfif.rsel2];
 
-always @(posedge CLK, negedge nRST)
+always @(negedge CLK, negedge nRST)
 begin
 	if (1'b0 == nRST)
 	begin

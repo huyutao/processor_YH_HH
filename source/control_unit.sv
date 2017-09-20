@@ -1,11 +1,11 @@
 `include "control_unit_if.vh"
 `include "cpu_types_pkg.vh"
 `include "diaosi_types_pkg.vh"
-
+`include "datapath_cache_if.vh"
 module control_unit (
 	input CLK,    // Clock
 	input nRST,  // Asynchronous reset active low
-	control_unit_if.cu cuif
+	control_unit_if.cu cuif,
 	/*
 		instr, zero_f,overflow_f, d_hit, i_hit,
 
@@ -51,11 +51,12 @@ end
 
 always_comb 
 begin
-	cuif.i_ren = (cuif.halt)?0:1;
-	cuif.ru_dren_out = (opcode == LW);
-	cuif.ru_dwen_out = (opcode == SW);
+	cuif.zero_sel = BNE_DIAOSI;
+	//cuif.i_ren = (cuif.halt)?0:1;
+	cuif.d_ren = (opcode == LW);
+	cuif.d_wen = (opcode == SW);
 
-	cuif.pc_next = cuif.i_hit;
+	//cuif.pc_next = cuif.i_hit;
 	cuif.alu_op = ALU_SLL;
 
     cuif.wsel = (opcode==RTYPE)?rd:(opcode==JAL)?31:rt;
@@ -68,7 +69,7 @@ begin
     cuif.W_mux = ALUOUT_DIAOSI;    // R31_DIAOSI, LUI_DIAOSI, DATA_DIAOSI, ALUOUT_DIAOSI, NEGF_DIAOSI
     //cuif.ALUSrc = RDAT2_DIAOSI;    // RDAT2_DIAOSI, SHAMT_DIAOSI, EXT_DIAOSI
     cuif.ExtOP = (opcode==ANDI||opcode==ORI||opcode==XORI)?ZEROEXT_DIAOSI:SIGNEXT_DIAOSI;   // ZEROEXT_DIAOSI, SIGNEXT_DIAOSI
-
+    //cuif.zero_sel = (opcode == )
     // RDAT2_DIAOSI, SHAMT_DIAOSI, EXT_DIAOSI
     if(opcode==RTYPE || opcode==BNE || opcode==BEQ) 
     begin
@@ -90,7 +91,7 @@ begin
     begin
     	next_halt = 1;
     end
-    else
+ /*   else
     begin
     	if(cuif.overflow_f)
     	begin
@@ -103,7 +104,7 @@ begin
 	    		next_halt = 1;
 	    	end
 	    end
-    end
+    end*/
 
 
 	casez(opcode)
@@ -173,14 +174,20 @@ begin
 	    BEQ:
 		begin
 			cuif.wen = 0;
-			cuif.alu_op = ALU_SUB;
-			if (cuif.zero_f==1) cuif.PCSrc = BRANCH_DIAOSI;
+			cuif.alu_op   = ALU_XOR;
+			//cuif.alu_op = ALU_SUB;
+			//if (cuif.zero_f==1) cuif.PCSrc = BRANCH_DIAOSI;
+			cuif.PCSrc    = BRANCH_DIAOSI;
+            cuif.zero_sel = BEQ_DIAOSI;
 		end
 	    BNE:
 		begin
 			cuif.wen = 0;
-			cuif.alu_op = ALU_SUB;
-			if (cuif.zero_f==0) cuif.PCSrc = BRANCH_DIAOSI;
+			cuif.alu_op   = ALU_XOR;
+			//cuif.alu_op = ALU_SUB;
+			cuif.PCSrc    = BRANCH_DIAOSI;
+            cuif.zero_sel = BNE_DIAOSI;			
+			//if (cuif.zero_f==0) cuif.PCSrc = BRANCH_DIAOSI;
 		end
 	    ADDI,ADDIU:
 		begin

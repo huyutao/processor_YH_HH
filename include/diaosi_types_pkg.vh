@@ -24,6 +24,9 @@ package diaosi_types_pkg;
 	ZEROEXT_DIAOSI, SIGNEXT_DIAOSI
 	} ExtOP_t;
 
+	typedef enum logic {
+	BNE_DIAOSI, BEQ_DIAOSI
+	} ZERO_SEL_t;
 
 endpackage
 `endif
