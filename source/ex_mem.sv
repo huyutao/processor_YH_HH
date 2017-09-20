@@ -26,7 +26,6 @@ always_ff@(posedge CLK, negedge nRST) begin
 		em.PCSrc_o3        <= ADD4_DIAOSI;
 		em.W_mux_o3        <= LUI_DIAOSI;
 		em.LUI_o3          <= '{default:0};
-		//em.i_ren_o3        <= '{default:0};
 		em.wen_o3          <= '{default:0};
 		em.wsel_o3         <= '{default:0};
 		em.d_wen_o3        <= '{default:0};
@@ -44,7 +43,6 @@ always_ff@(posedge CLK, negedge nRST) begin
 			em.PCSrc_o3        <= ADD4_DIAOSI;
 			em.W_mux_o3        <= LUI_DIAOSI;;
 			em.LUI_o3          <= '{default:0};
-			//em.i_ren_o3        <= '{default:0};
 			em.wen_o3          <= '{default:0};
 			em.wsel_o3         <= '{default:0};
 			em.d_wen_o3        <= '{default:0};
@@ -61,7 +59,6 @@ always_ff@(posedge CLK, negedge nRST) begin
 			em.PCSrc_o3        <= em.PCSrc_i3;
 			em.W_mux_o3        <= em.W_mux_i3;
 			em.LUI_o3          <= em.LUI_i3;
-			//em.i_ren_o3        <= em.i_ren_i3;
 			em.wen_o3          <= em.wen_i3;
 			em.wsel_o3         <= em.wsel_i3;
 			em.d_wen_o3        <= em.d_wen_i3;
@@ -78,7 +75,6 @@ always_ff@(posedge CLK, negedge nRST) begin
 			em.PCSrc_o3        <= em.PCSrc_o3;
 			em.W_mux_o3        <= em.W_mux_o3;
 			em.LUI_o3          <= em.LUI_o3;
-			//em.i_ren_o3        <= em.i_ren_o3;
 			em.wen_o3          <= em.wen_o3;
 			em.wsel_o3         <= em.wsel_o3;
 			em.d_wen_o3        <= em.d_wen_o3;

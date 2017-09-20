@@ -26,7 +26,6 @@ always_ff@(posedge CLK, negedge nRST) begin
 		mw.PCSrc_o4          <= ADD4_DIAOSI;
 		mw.W_mux_o4          <= LUI_DIAOSI;
 		mw.LUI_o4            <= '{default:0};
-		//mw.i_ren_o4          <= '{default:0};
 		mw.wen_o4            <= '{default:0};
 		mw.wsel_o4           <= '{default:0};
 		mw.dmemload_o4       <= '{default:0};
@@ -41,7 +40,6 @@ always_ff@(posedge CLK, negedge nRST) begin
 			mw.PCSrc_o4          <= mw.PCSrc_i4;
 			mw.W_mux_o4          <= mw.W_mux_i4;
 			mw.LUI_o4            <= mw.LUI_i4;
-			//mw.i_ren_o4          <= mw.i_ren_i4;
 			mw.wen_o4            <= mw.wen_i4;
 			mw.wsel_o4           <= mw.wsel_i4;
 			mw.dmemload_o4       <= mw.dmemload_i4;
@@ -55,7 +53,6 @@ always_ff@(posedge CLK, negedge nRST) begin
 			mw.PCSrc_o4          <= mw.PCSrc_o4;
 			mw.W_mux_o4          <= mw.W_mux_o4;
 			mw.LUI_o4            <= mw.LUI_o4;
-			//mw.i_ren_o4          <= mw.i_ren_o4;
 			mw.wen_o4            <= mw.wen_o4;
 			mw.wsel_o4           <= mw.wsel_o4;
 			mw.dmemload_o4       <= mw.dmemload_o4;

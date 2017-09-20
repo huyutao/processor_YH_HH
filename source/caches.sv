@@ -52,7 +52,7 @@ module caches (
   //single cycle
   assign dcif.ihit = (dcif.imemREN) ? ~cif.iwait : 0;
   assign dcif.dhit = (dcif.dmemREN|dcif.dmemWEN) ? ~cif.dwait : 0;
-  assign dcif.imemload = (cif.iwait) ? instr : cif.iload;
+  assign dcif.imemload = cif.iload;
   assign dcif.dmemload = cif.dload;
 
 
@@ -61,6 +61,6 @@ module caches (
   assign cif.dWEN = dcif.dmemWEN;
   assign cif.dstore = dcif.dmemstore;
   assign cif.iaddr = dcif.imemaddr;
-  assign cif.daddr = daddr;
+  assign cif.daddr = dcif.dmemaddr;
 
 endmodule

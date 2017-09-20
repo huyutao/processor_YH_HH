@@ -6,7 +6,7 @@
 */
 `include "pc_if.vh"
 `include "cpu_types_pkg.vh"
-  import cpu_types_pkg::*;
+import cpu_types_pkg::*;
 module pc (
    input  logic         CLK, nRST,
    pc_if.pc pcif
