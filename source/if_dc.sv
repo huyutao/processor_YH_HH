@@ -22,15 +22,19 @@ always_ff@(posedge CLK, negedge nRST) begin
 		id.npc_o1 <= '{default:0};
 		id.imemload_o1 <= '{default:0};
 	end 
-  	else begin
-    	if (id.en == 1) begin
-        	id.npc_o1 <= id.npc_i1;
+  else begin
+      if (id.id_flushed) begin
+        id.npc_o1 <= id.npc_o1;
+        id.imemload_o1 <= '{default:0};
+
+    	end else if (id.id_en == 1) begin
+        id.npc_o1 <= id.npc_i1;
     		id.imemload_o1 <= id.imemload_i1;
     	end 
-        else begin
-        	id.npc_o1 <= id.npc_o1;
+      else begin
+        id.npc_o1 <= id.npc_o1;
     		id.imemload_o1 <= id.imemload_o1;
     	end
-    end
+  end
 end
 endmodule

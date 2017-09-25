@@ -28,5 +28,9 @@ package diaosi_types_pkg;
 	BNE_DIAOSI, BEQ_DIAOSI
 	} ZERO_SEL_t;
 
+	typedef enum logic [1:0] {
+	DATA_DS, LUI_DS, ALUOUT_DS, RDAT_DS
+	} Forward_t;
+
 endpackage
 `endif

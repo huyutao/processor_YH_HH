@@ -33,6 +33,7 @@ always_ff@(posedge CLK, negedge nRST) begin
 		em.dmemstore_o3    <= '{default:0};
 		em.halt_o3         <= '{default:0};
 		em.dmemaddr_o3     <= '{default:0};
+		em.imemload_o3     <= '{default:0};
 	end
 	else begin
 		if (em.flushed == 1) begin 
@@ -50,6 +51,7 @@ always_ff@(posedge CLK, negedge nRST) begin
 			em.dmemstore_o3    <= '{default:0};
 			em.halt_o3         <= '{default:0};  
 			em.dmemaddr_o3     <= '{default:0};
+			em.imemload_o3     <= '{default:0};
 		end 
 		else if (em.en == 1) begin
  			em.jump_addr_o3    <= em.jump_addr_i3;
@@ -65,7 +67,8 @@ always_ff@(posedge CLK, negedge nRST) begin
 			em.d_ren_o3        <= em.d_ren_i3;
 			em.dmemstore_o3    <= em.dmemstore_i3;
 			em.halt_o3         <= em.halt_i3;
-			em.dmemaddr_o3     <= em.dmemaddr_i3;                
+			em.dmemaddr_o3     <= em.dmemaddr_i3;
+			em.imemload_o3     <= em.imemload_i3;             
 		end	
 		else begin
  			em.jump_addr_o3    <= em.jump_addr_o3;
@@ -82,6 +85,7 @@ always_ff@(posedge CLK, negedge nRST) begin
 			em.dmemstore_o3    <= em.dmemstore_o3;
 			em.halt_o3         <= em.halt_o3; 
 			em.dmemaddr_o3     <= em.dmemaddr_o3;  
+			em.imemload_o3     <= em.imemload_o3;    		
 		end 
 	end // else
 end // always_ff@(posedge CLK, negedge nRST)

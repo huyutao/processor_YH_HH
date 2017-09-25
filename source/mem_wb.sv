@@ -30,6 +30,8 @@ always_ff@(posedge CLK, negedge nRST) begin
 		mw.wsel_o4           <= '{default:0};
 		mw.dmemload_o4       <= '{default:0};
 		mw.dmemaddr_o4       <= '{default:0};   
+		mw.imemload_o4       <= '{default:0};   
+		mw.d_ren_o4          <= '{default:0};
 	end // if (!nRST)
 	else begin
 		if (mw.wb_en == 1) begin
@@ -43,7 +45,9 @@ always_ff@(posedge CLK, negedge nRST) begin
 			mw.wen_o4            <= mw.wen_i4;
 			mw.wsel_o4           <= mw.wsel_i4;
 			mw.dmemload_o4       <= mw.dmemload_i4;
-			mw.dmemaddr_o4       <= mw.dmemaddr_i4;   			
+			mw.dmemaddr_o4       <= mw.dmemaddr_i4;   	
+			mw.imemload_o4       <= mw.imemload_i4;   
+			mw.d_ren_o4          <= mw.d_ren_i4;		
 		end // if (mw.en == 1)
 		else begin
 			mw.jump_addr_o4      <= mw.jump_addr_o4;
@@ -57,6 +61,8 @@ always_ff@(posedge CLK, negedge nRST) begin
 			mw.wsel_o4           <= mw.wsel_o4;
 			mw.dmemload_o4       <= mw.dmemload_o4;
 			mw.dmemaddr_o4       <= mw.dmemaddr_o4;   
+			mw.imemload_o4       <= mw.imemload_o4;
+			mw.d_ren_o4          <= mw.d_ren_o4;
 		end // else
 	end // else
 end // always_ff@(posedge CLK, negedge nRST)

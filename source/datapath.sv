@@ -15,6 +15,8 @@
 `include "register_file_if.vh"
 `include "alu_if.vh"
 `include "stage_if.vh"
+`include "forwarding_unit_if.vh"
+`include "hazard_unit_if.vh"
 // alu op, mips op, and instruction type
 `include "cpu_types_pkg.vh"
 `include "diaosi_types_pkg.vh"//add later
@@ -38,42 +40,51 @@ module datapath (
   register_file_if rfif();
   alu_if aluif ();
   stage_if stif ();
-
+  hazard_unit_if huif();
+  forwarding_unit_if fuif();
   //DUT
-  control_unit CU(CLK, nRST,cuif);
-  request_unit RU(CLK, nRST,ruif);
-  pc PC(CLK, nRST,pcif);
-  register_file RF(CLK, nRST,rfif);
-  alu    ALU (aluif);
-  if_dc  ID  (CLK, nRST, stif);
-  dc_ex  DE  (CLK, nRST, stif);
-  ex_mem EM  (CLK, nRST, stif);
-  mem_wb MW  (CLK, nRST, stif);
-
+  control_unit        CU(CLK, nRST,cuif);
+  request_unit        RU(CLK, nRST,ruif);
+  pc                  PC(CLK, nRST,pcif);
+  register_file       RF(CLK, nRST,rfif);
+  alu                 ALU (aluif);
+  if_dc               ID  (CLK, nRST, stif);
+  dc_ex               DE  (CLK, nRST, stif);
+  ex_mem              EM  (CLK, nRST, stif);
+  mem_wb              MW  (CLK, nRST, stif);
+  hazard_unit         HU (huif);
+  forwarding_unit     FU (fuif);
   //pipeline regs
 
   //pc_signal control
   always_comb
     begin
-      casez(stif.PCSrc_o4)  
+      casez(stif.PCSrc_i3)  
         ADD4_DIAOSI:       pcif.pc3 = pcif.npc;
-        BRANCH_DIAOSI:     pcif.pc3 = stif.branch_addr_o4;
-        JUMP_DIAOSI:       pcif.pc3 = stif.jump_addr_o4;
-        JR_DIAOSI:         pcif.pc3 = stif.jr_addr_o4;   
-        default:  pcif.pc3 = pcif.npc;
-    endcase 
+        BRANCH_DIAOSI:     pcif.pc3 = stif.branch_addr_i3;
+        JUMP_DIAOSI:       pcif.pc3 = stif.jump_addr_i3;
+        JR_DIAOSI:         pcif.pc3 = stif.jr_addr_i3;   
+        default:           pcif.pc3 = pcif.npc;
+      endcase 
   end
-  assign pcif.pc_en = dcif.ihit;
+  assign pcif.pc_en = dcif.ihit & huif.pc_en;
   //icache control
-  assign dcif.imemREN   =  1'b1;
-  assign dcif.imemaddr  =  pcif.PC; 
+  assign dcif.imemREN      = 1'b1;
+  assign dcif.imemaddr     = pcif.PC; 
   //if_dc 
-  assign stif.npc_i1    =  pcif.npc;
-  assign stif.imemload_i1 = dcif.imemload;
-  assign stif.en        = dcif.ihit;  //en
+  assign stif.npc_i1       = pcif.npc;
+  assign stif.imemload_i1  = dcif.imemload;
+  assign stif.id_en        = huif.id_en & dcif.ihit;
+  assign stif.en           = dcif.ihit;  //en
+  assign stif.id_flushed   = huif.flushed; 
   //control_unit  change later!! 
   //assign cuif.i_hit     = dcif.ihit;
-  assign cuif.instr = stif.imemload_o1;
+  assign cuif.instr        = stif.imemload_o1;
+  assign huif.pc_src       = stif.PCSrc_o2;
+  assign huif.d_ren        = stif.d_ren_o2;
+  assign huif.rsel1        = cuif.rsel1;
+  assign huif.rsel2        = cuif.rsel2;
+  assign huif.wsel         = stif.wsel_o2;
   //register file
   always_comb
     begin
@@ -99,6 +110,7 @@ module datapath (
     endcase 
   end 
   assign stif.npc_i2        = stif.npc_o1;
+  assign stif.imemload_i2        = stif.imemload_o1;
   assign stif.j_addr26_i2   = cuif.j_addr26;
   assign stif.imm16_i2      = cuif.imm16;
   assign stif.LUI_i2        = cuif.lui;
@@ -115,18 +127,58 @@ module datapath (
   assign stif.alu_op_i2     = cuif.alu_op;
   assign stif.rdat1_i2      = rfif.rdat1;
   assign stif.rdat2_i2      = rfif.rdat2;
+  assign stif.rsel1_i2      = rfif.rsel1;
+  assign stif.rsel2_i2      = rfif.rsel2;
   //excute
+  //forward_unit
+  assign fuif.emsel         = stif.wsel_o3;
+  assign fuif.emwen         = stif.wen_o3;
+  assign fuif.imemload      = opcode_t'(stif.imemload_o3[31:26]);
+  assign fuif.dersel1       = stif.rsel1_o2;
+  assign fuif.dersel2       = stif.rsel2_o2;
+  assign fuif.mwsel         = stif.wsel_o4;
+  assign fuif.mwwen         = stif.wen_o4;
   //alu
+  logic     t1;
+  word_t    tempB, tempdaddr1, tempdaddr2;
+  opcode_t  tempOpc;
+  assign    tempOpc          = opcode_t'(stif.imemload_o4[31:26]);
+  assign    t1               = (tempOpc == LUI)? 1:0;
   always_comb
   begin
+    casez(stif.d_ren_o4)  
+      1'b1:     tempdaddr1   = stif.dmemload_o4;
+      1'b0:     tempdaddr1   = stif.dmemaddr_o4;     
+      default:  tempdaddr1   = stif.dmemload_o4;
+    endcase 
+    casez(t1)  
+      1'b0:     tempdaddr2   = tempdaddr1;
+      1'b1:     tempdaddr2   = stif.LUI_o4;     
+      default:  tempdaddr2   = stif.dmemload_o4;
+    endcase 
     casez(stif.ALUSrc_o2)  
-      RDAT2_DIAOSI:     aluif.b        = stif.rdat2_o2;
-      SHAMT_DIAOSI:     aluif.b        = stif.shamt_o2;
-      EXT_DIAOSI:       aluif.b        = stif.ext32_o2;     
-      default:          aluif.b        = stif.rdat2_o2;
+      RDAT2_DIAOSI:     tempB        = stif.rdat2_o2;
+      SHAMT_DIAOSI:     tempB        = stif.shamt_o2;
+      EXT_DIAOSI:       tempB        = stif.ext32_o2;     
+      default:          tempB        = stif.rdat2_o2;
+    endcase 
+    casez(fuif.forwardA)  
+      LUI_DS:           aluif.a      = stif.LUI_o3;
+      DATA_DS:          aluif.a      = tempdaddr2;
+      ALUOUT_DS:        aluif.a      = stif.dmemaddr_o3;
+      RDAT_DS:         aluif.a      = stif.rdat1_o2;
+      default:          aluif.a      = stif.rdat1_o2;
+    endcase 
+    casez(fuif.forwardB)  
+      LUI_DS:           aluif.b      = stif.LUI_o3;
+      DATA_DS:          aluif.b      = tempdaddr2;
+      ALUOUT_DS:        aluif.b      = stif.dmemaddr_o3;
+      RDAT_DS:          aluif.b      = tempB;
+      default:          aluif.b      = tempB;
     endcase 
   end 
-  assign aluif.a            = stif.rdat1_o2;
+  //assign aluif.a            = stif.rdat1_o2;
+
   assign aluif.op           = stif.alu_op_o2;
   //memory address
   logic   zero_flag;
@@ -134,9 +186,9 @@ module datapath (
   always_comb
   begin
     casez(stif.zero_sel_o2)  
-      BNE_DIAOSI:     zero_flag        = aluif.zero_flag;
-      BEQ_DIAOSI:     zero_flag        = ~aluif.zero_flag;    
-      default:        zero_flag        = ~aluif.zero_flag;
+      BNE_DIAOSI:     zero_flag        = ~aluif.zero_flag;
+      BEQ_DIAOSI:     zero_flag        = aluif.zero_flag;    
+      default:        zero_flag        = aluif.zero_flag;
     endcase 
   end   
   assign pc1 = {{16{stif.imm16_o2[15]}}, stif.imm16_o2[15:0]}<<2;
@@ -144,6 +196,7 @@ module datapath (
   assign stif.flushed        = dcif.dhit;
   assign stif.jump_addr_i3   = stif.npc_o2[31:28]<<28 |  stif.j_addr26_o2<<2;
   assign stif.npc_i3         = stif.npc_o2;
+  assign stif.imemload_i3    = stif.imemload_o2;
   always_comb
   begin
     casez(zero_flag)  
@@ -170,6 +223,8 @@ module datapath (
   assign dcif.halt           = stif.halt_o3;
   assign dcif.dmemaddr       = stif.dmemaddr_o3;
   //mem_wb
+  assign stif.imemload_i4    = stif.imemload_o3;
+  assign stif.d_ren_i4       = stif.d_ren_o3;
   assign stif.wb_en          = dcif.ihit | dcif.dhit;
   assign stif.jump_addr_i4   = stif.jump_addr_o3;
   assign stif.npc_i4         = stif.npc_o3;

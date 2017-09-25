@@ -37,9 +37,12 @@ always_ff@(posedge CLK, negedge nRST) begin
         de.alu_op_o2   <= ALU_SLL;
         de.rdat2_o2    <= '{default:0};
         de.rdat1_o2    <= '{default:0};
+        de.imemload_o2 <= '{default:0};
+        de.rsel1_o2    <= '{default:0};  
+        de.rsel2_o2    <= '{default:0};
 	end 
   	else begin
-    	if (de.en == 1) begin
+    	if (de.id_en == 1) begin
         de.npc_o2       <= de.npc_i2;
         de.ext32_o2     <= de.ext32_i2;
         de.j_addr26_o2  <= de.j_addr26_i2;
@@ -58,6 +61,9 @@ always_ff@(posedge CLK, negedge nRST) begin
         de.alu_op_o2    <= de.alu_op_i2;
         de.rdat2_o2     <= de.rdat2_i2;
         de.rdat1_o2     <= de.rdat1_i2;
+        de.imemload_o2  <= de.imemload_i2;
+        de.rsel1_o2     <= de.rsel1_i2;  
+        de.rsel2_o2     <= de.rsel2_i2;
     	end 
       else begin
         de.npc_o2       <= de.npc_o2;
@@ -78,6 +84,9 @@ always_ff@(posedge CLK, negedge nRST) begin
         de.alu_op_o2    <= de.alu_op_o2;
         de.rdat2_o2     <= de.rdat2_o2;
         de.rdat1_o2     <= de.rdat1_o2;
+        de.imemload_o2  <= de.imemload_o2;
+        de.rsel1_o2     <= de.rsel1_o2;  
+        de.rsel2_o2     <= de.rsel2_o2;
     	end
     end
 end

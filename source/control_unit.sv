@@ -171,14 +171,14 @@ begin
 	    BEQ:
 		begin
 			cuif.wen = 0;
-			cuif.alu_op   = ALU_XOR;
+			cuif.alu_op   = ALU_SUB;
 			cuif.PCSrc    = BRANCH_DIAOSI;
             cuif.zero_sel = BEQ_DIAOSI;
 		end
 	    BNE:
 		begin
 			cuif.wen = 0;
-			cuif.alu_op   = ALU_XOR;
+			cuif.alu_op   = ALU_SUB;
 			cuif.PCSrc    = BRANCH_DIAOSI;
             cuif.zero_sel = BNE_DIAOSI;	
 		end
