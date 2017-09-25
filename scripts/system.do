@@ -131,7 +131,9 @@ add wave -noupdate -group fuif /system_tb/DUT/CPU/DP/fuif/dersel1
 add wave -noupdate -group fuif /system_tb/DUT/CPU/DP/fuif/dersel2
 add wave -noupdate -group fuif /system_tb/DUT/CPU/DP/fuif/mwsel
 add wave -noupdate -group fuif /system_tb/DUT/CPU/DP/fuif/mwwen
+add wave -noupdate -group fuif /system_tb/DUT/CPU/DP/fuif/store
 add wave -noupdate -group fuif /system_tb/DUT/CPU/DP/fuif/imemload
+add wave -noupdate -group fuif /system_tb/DUT/CPU/DP/fuif/ALUSrc
 add wave -noupdate -group aluif /system_tb/DUT/CPU/DP/aluif/zero_flag
 add wave -noupdate -group aluif /system_tb/DUT/CPU/DP/aluif/negative_flag
 add wave -noupdate -group aluif /system_tb/DUT/CPU/DP/aluif/overflow_flag
@@ -210,7 +212,7 @@ add wave -noupdate -group {rfif wb} /system_tb/DUT/CPU/DP/rfif/wsel
 add wave -noupdate -group {rfif wb} /system_tb/DUT/CPU/DP/rfif/wdat
 add wave -noupdate /system_tb/DUT/CPU/DP/RF/data
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {344328 ps} 0}
+WaveRestoreCursors {{Cursor 1} {92226 ps} 0}
 quietly wave cursor active 1
 configure wave -namecolwidth 265
 configure wave -valuecolwidth 100
@@ -226,4 +228,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits ns
 update
-WaveRestoreZoom {232 ns} {504 ns}
+WaveRestoreZoom {11 ns} {365 ns}

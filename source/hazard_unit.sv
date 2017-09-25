@@ -29,7 +29,7 @@ begin
 		if ((huif.wsel != 0) & (huif.d_ren == 1) & ((huif.wsel == huif.rsel1)|(huif.wsel == huif.rsel2))) begin
 	   		huif.flushed = 0;
 	   		huif.pc_en = 0;
-	   		huif.id_en = 0;			
+	   		huif.id_en = 1;			
 		end
 	end
 end

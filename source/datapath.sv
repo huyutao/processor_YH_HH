@@ -131,6 +131,7 @@ module datapath (
   assign stif.rsel2_i2      = rfif.rsel2;
   //excute
   //forward_unit
+  assign fuif.ALUSrc        = stif.ALUSrc_o2;
   assign fuif.emsel         = stif.wsel_o3;
   assign fuif.emwen         = stif.wen_o3;
   assign fuif.imemload      = opcode_t'(stif.imemload_o3[31:26]);
@@ -213,7 +214,7 @@ module datapath (
   assign stif.wsel_i3        = stif.wsel_o2;
   assign stif.d_wen_i3       = stif.d_wen_o2;
   assign stif.d_ren_i3       = stif.d_ren_o2;
-  assign stif.dmemstore_i3   = stif.rdat2_o2;
+  assign stif.dmemstore_i3   = (fuif.store == RDAT2_DS)? stif.rdat2_o2: stif.dmemaddr_o3;
   assign stif.halt_i3        = stif.halt_o2;
   assign stif.dmemaddr_i3    = aluif.out;
   //dcache

@@ -32,5 +32,8 @@ package diaosi_types_pkg;
 	DATA_DS, LUI_DS, ALUOUT_DS, RDAT_DS
 	} Forward_t;
 
+	typedef enum logic {
+	RDAT2_DS, Dmemaddr_DS
+	} Store_t;
 endpackage
 `endif
