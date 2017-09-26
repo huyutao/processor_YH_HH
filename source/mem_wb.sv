@@ -11,7 +11,7 @@
 `include "stage_if.vh"
 module mem_wb(
   input logic CLK, nRST, 
-  stage_if.mem_wb_13 mw
+  stage_if.mem_wb mw
 );
 
 import cpu_types_pkg::*;

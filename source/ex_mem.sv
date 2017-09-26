@@ -11,7 +11,7 @@
 `include "stage_if.vh"
 module ex_mem(
   input logic CLK, nRST, 
-  stage_if.ex_mem_16 em
+  stage_if.ex_mem em
 );
 
 import cpu_types_pkg::*;

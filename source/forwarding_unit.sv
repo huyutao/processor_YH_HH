@@ -20,26 +20,20 @@ begin
 	fu.forwardA = RDAT_DS;
 	fu.forwardB = RDAT_DS;
 	fu.store    = RDAT2_DS;
-	if (fu.emwen & (fu.emsel != 0) & (fu.emsel == fu.dersel1))
-		fu.forwardA = ALUOUT_DS;
-
-	if (fu.emwen & (fu.emsel != 0) & (fu.emsel == fu.dersel2) & (fu.ALUSrc == RDAT2_DIAOSI)) begin
-		fu.forwardB = ALUOUT_DS;	
-	end
-	if (fu.emwen & (fu.emsel != 0) & (fu.emsel == fu.dersel2) & (fu.ALUSrc == EXT_DIAOSI)) begin
+	if (fu.wen_o3 & (fu.wsel_o3 != 0) & (fu.wsel_o3 == fu.rsel2_o2) & (fu.ALUSrc == EXT_DIAOSI))
 		fu.store    = Dmemaddr_DS;
-	end
-	if (fu.emwen & (fu.emsel != 0) & (fu.emsel == fu.dersel1) & (fu.imemload == LUI)) 
-		fu.forwardA = LUI_DS;
 
-	if (fu.emwen & (fu.emsel != 0) & (fu.emsel == fu.dersel2) & (fu.imemload == LUI) & (fu.ALUSrc == RDAT2_DIAOSI))
-		fu.forwardB = LUI_DS;	
+	if (fu.wen_o3 & (fu.wsel_o3 != 0) & (fu.wsel_o3 == fu.rsel1_o2))
+		fu.forwardA = OUT3_DIAOSI;
 
-	if (fu.mwwen & (fu.mwsel != 0) & (fu.mwsel == fu.dersel1))
-		fu.forwardA = DATA_DS;
+	if (fu.wen_o3 & (fu.wsel_o3 != 0) & (fu.wsel_o3 == fu.rsel2_o2) & (fu.ALUSrc == RDAT2_DIAOSI))
+		fu.forwardB = OUT3_DIAOSI;	
+
+	if (fu.wen_o4 & (fu.wsel_o4 != 0) & (fu.wsel_o4 == fu.rsel1_o2))
+		fu.forwardA = OUT4_DIAOSI;
 		
-	if (fu.mwwen & (fu.mwsel != 0) & (fu.mwsel == fu.dersel2) & (fu.ALUSrc == RDAT2_DIAOSI))
-		fu.forwardB = DATA_DS;
+	if (fu.wen_o4 & (fu.wsel_o4 != 0) & (fu.wsel_o4 == fu.rsel2_o2) & (fu.ALUSrc == RDAT2_DIAOSI))
+		fu.forwardB = OUT4_DIAOSI;
 
 end
 

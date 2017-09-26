@@ -11,7 +11,7 @@
 `include "stage_if.vh"
 module if_dc(
   input logic CLK, nRST, 
-  stage_if.if_dc_6 id
+  stage_if.if_dc id
 );
 
 import cpu_types_pkg::*;
@@ -23,7 +23,7 @@ always_ff@(posedge CLK, negedge nRST) begin
 		id.imemload_o1 <= '{default:0};
 	end 
   else begin
-      if (id.id_flushed) begin
+      if (id.hz_flushed) begin
         id.npc_o1 <= id.npc_o1;
         id.imemload_o1 <= '{default:0};
 

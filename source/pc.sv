@@ -18,8 +18,8 @@ always_ff@(posedge CLK, negedge nRST) begin
   else begin
       if (pcif.pc_en == 1)
           pcif.PC <= pcif.pc3;
-      //else                    //?
-          //pcif.PC <= pcif.PC;
+      else                    //?
+          pcif.PC <= pcif.PC;
 
   end
 end

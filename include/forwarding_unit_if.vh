@@ -17,19 +17,18 @@ interface forwarding_unit_if;
   import diaosi_types_pkg::*;
 
   Forward_t      forwardA, forwardB;
-  logic          emwen,mwwen;
+  logic          wen_o3,wen_o4;
   Store_t        store;
-  opcode_t       imemload;
-  regbits_t      dersel1, dersel2, emsel, mwsel;
+  regbits_t      rsel1_o2, rsel2_o2, wsel_o3, wsel_o4;
   ALUSrc_t       ALUSrc;
   // register file ports
   modport fu (
-    input   ALUSrc, emsel, emwen, dersel1, dersel2, imemload, mwwen, mwsel,
+    input   ALUSrc, wsel_o3, wen_o3, rsel1_o2, rsel2_o2, wen_o4, wsel_o4,
     output  forwardA, forwardB, store
   );
   // register file tb
   modport tb (
-    output   ALUSrc, emsel, emwen, dersel1, dersel2, imemload, mwwen, mwsel,
+    output   ALUSrc, wsel_o3, wen_o3, rsel1_o2, rsel2_o2, wen_o4, wsel_o4,
     input    forwardA, forwardB, store
   );
 endinterface

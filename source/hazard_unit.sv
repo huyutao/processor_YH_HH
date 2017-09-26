@@ -12,25 +12,25 @@ always_comb
 begin
 	if (huif.pc_src == JUMP_DIAOSI) begin
 	   	huif.flushed = 1;
-	   	huif.pc_en = 0;
+	   	huif.pc_en = 1;
 	   	huif.id_en = 1;
 	end else if (huif.pc_src == JR_DIAOSI) begin
 	   	huif.flushed = 1;
-	   	huif.pc_en = 0;
+	   	huif.pc_en = 1;
 	   	huif.id_en = 1;
-	end else if (huif.pc_src == BRANCH_DIAOSI) begin
+	end else if (huif.pc_src == BRANCH_DIAOSI & huif.branch_sel == 1) begin
 	   	huif.flushed = 1;
-	   	huif.pc_en = 0;
+	   	huif.pc_en = 1;
 	   	huif.id_en = 1;
+	// LW add bubble
+	end else if ((huif.wsel != 0) & (huif.d_ren == 1) & ((huif.wsel == huif.rsel1)|(huif.wsel == huif.rsel2))) begin
+   		huif.flushed = 0;
+   		huif.pc_en = 0;
+   		huif.id_en = 1;	
 	end else begin
 	   	huif.flushed = 0;
 	   	huif.pc_en = 1;
 	   	huif.id_en = 1;
-		if ((huif.wsel != 0) & (huif.d_ren == 1) & ((huif.wsel == huif.rsel1)|(huif.wsel == huif.rsel2))) begin
-	   		huif.flushed = 0;
-	   		huif.pc_en = 0;
-	   		huif.id_en = 1;			
-		end
 	end
 end
 

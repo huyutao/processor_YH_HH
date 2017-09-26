@@ -3,8 +3,6 @@
 `include "diaosi_types_pkg.vh"
 `include "datapath_cache_if.vh"
 module control_unit (
-	input CLK,    // Clock
-	input nRST,  // Asynchronous reset active low
 	control_unit_if.cu cuif
 	/*
 		instr, zero_f,overflow_f, d_hit, i_hit,
@@ -21,7 +19,6 @@ import diaosi_types_pkg::*;
 funct_t funct;
 opcode_t opcode;
 regbits_t rs,rt,rd;
-logic next_halt;
 
 
 assign opcode = opcode_t'(cuif.instr[31:26]);
@@ -36,19 +33,6 @@ assign cuif.j_addr26 = cuif.instr[25:0];
 assign cuif.lui = {cuif.imm16,16'b0};
 
 
-always @(posedge CLK, negedge nRST)
-begin
-	if (1'b0 == nRST)
-	begin
-		cuif.halt <= 0;
-	end
-	else
-	begin
-		if (next_halt) cuif.halt <= 1;
-	end
-end
-
-
 always_comb 
 begin
 	cuif.zero_sel = BNE_DIAOSI;
@@ -61,7 +45,6 @@ begin
 	cuif.rsel1 = rs;
 	cuif.rsel2 = (opcode==RTYPE || opcode==BEQ || opcode==BNE || opcode==SW)?rt:0;
 	cuif.wen = 1;
-	next_halt = 0;
 
     cuif.PCSrc = ADD4_DIAOSI;      // ADD4_DIAOSI,JUMP_DIAOSI,JR_DIAOSI,BRANCH_DIAOSI
     cuif.W_mux = ALUOUT_DIAOSI;    // R31_DIAOSI, LUI_DIAOSI, DATA_DIAOSI, ALUOUT_DIAOSI, NEGF_DIAOSI
@@ -85,9 +68,9 @@ begin
     end
 
     if(cuif.instr==32'hFFFFFFFF)         // HALT
-    begin
-    	next_halt = 1;
-    end
+    	cuif.halt = 1;
+    else
+    	cuif.halt = 0;
  /*   else    edit in the future
     begin
     	if(cuif.overflow_f)
