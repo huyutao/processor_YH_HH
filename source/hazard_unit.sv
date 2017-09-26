@@ -10,27 +10,31 @@ import diaosi_types_pkg::*;
 
 always_comb
 begin
-	if (huif.pc_src == JUMP_DIAOSI) begin
-	   	huif.flushed = 1;
+	if ((huif.pc_src == JUMP_DIAOSI) | (huif.pc_src == JR_DIAOSI) | (huif.pc_src == BRANCH_DIAOSI & huif.branch_sel == 1)) begin
+	   	huif.flushed1 = 1;
+	   	huif.id_en1 = 1;
+	   	huif.flushed2 = 1;
+	   	huif.id_en2 = 1;
 	   	huif.pc_en = 1;
-	   	huif.id_en = 1;
-	end else if (huif.pc_src == JR_DIAOSI) begin
-	   	huif.flushed = 1;
-	   	huif.pc_en = 1;
-	   	huif.id_en = 1;
-	end else if (huif.pc_src == BRANCH_DIAOSI & huif.branch_sel == 1) begin
-	   	huif.flushed = 1;
-	   	huif.pc_en = 1;
-	   	huif.id_en = 1;
 	// LW add bubble
-	end else if ((huif.wsel != 0) & (huif.d_ren == 1) & ((huif.wsel == huif.rsel1)|(huif.wsel == huif.rsel2))) begin
-   		huif.flushed = 0;
-   		huif.pc_en = 0;
-   		huif.id_en = 1;	
+	end else if (huif.opcode == LW || huif.opcode == SW) begin
+		huif.flushed1 = 0;
+	   	huif.id_en1 = 0;
+	   	huif.flushed2 = 1;
+	   	huif.id_en2 = 1;
+	   	huif.pc_en = 0;
+	end else if ((huif.d_ren == 1) & ((huif.wsel == huif.rsel1)|(huif.wsel == huif.rsel2))) begin
+   		huif.flushed1 = 0;
+	   	huif.id_en1 = 1;
+	   	huif.flushed2 = 0;
+	   	huif.id_en2 = 1;
+	   	huif.pc_en = 0;
 	end else begin
-	   	huif.flushed = 0;
+	   	huif.flushed1 = 0;
+	   	huif.id_en1 = 1;
+	   	huif.flushed2 = 0;
+	   	huif.id_en2 = 1;
 	   	huif.pc_en = 1;
-	   	huif.id_en = 1;
 	end
 end
 

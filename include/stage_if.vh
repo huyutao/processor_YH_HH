@@ -13,11 +13,12 @@ interface stage_if;
   // import types
   import cpu_types_pkg::*;
   import diaosi_types_pkg::*; // don't forget add ;
-  logic       en, flushed, wb_en, id_en,
+  logic       en, flushed, wb_en, id_en1, id_en2,
               halt_i2, halt_o2, halt_i3, halt_o3,
   			      d_ren_i2, d_ren_o2, d_ren_i3, d_ren_o3, d_ren_i4, d_ren_o4,
   			      d_wen_i2, d_wen_o2, d_wen_i3, d_wen_o3,
-  			      wen_i2, wen_o2, wen_i3, wen_o3, wen_i4, wen_o4, hz_flushed;
+  			      wen_i2, wen_o2, wen_i3, wen_o3, wen_i4, wen_o4, 
+              hz_flushed1, hz_flushed2;
 
   ZERO_SEL_t  zero_sel_i2, zero_sel_o2;
 
@@ -50,14 +51,14 @@ interface stage_if;
   aluop_t     alu_op_i2, alu_op_o2;
 
   modport if_dc (
-  	input   npc_i1, id_en, imemload_i1, hz_flushed,
+  	input   npc_i1, id_en1, imemload_i1, hz_flushed1,
   	output  npc_o1, imemload_o1
   );
 
   modport dc_ex (
-  	input  id_en, npc_i2, ext32_i2, j_addr26_i2, imm16_i2, LUI_i2, zero_sel_i2,PCSrc_i2,
+  	input  id_en2, npc_i2, ext32_i2, j_addr26_i2, imm16_i2, LUI_i2, zero_sel_i2,PCSrc_i2,
   	ALUSrc_i2, W_mux_i2,  shamt_i2, halt_i2, d_ren_i2, d_wen_i2, wen_i2, 
-  	wsel_i2, alu_op_i2, rdat1_i2, rdat2_i2, imemload_i2, rsel1_i2, rsel2_i2,hz_flushed,
+  	wsel_i2, alu_op_i2, rdat1_i2, rdat2_i2, imemload_i2, rsel1_i2, rsel2_i2,hz_flushed2,
 
   	output  npc_o2, ext32_o2, j_addr26_o2, imm16_o2, LUI_o2, zero_sel_o2,PCSrc_o2,
   	ALUSrc_o2, W_mux_o2,  shamt_o2, halt_o2,  d_ren_o2, d_wen_o2, wen_o2, 
