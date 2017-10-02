@@ -10,23 +10,17 @@ import diaosi_types_pkg::*;
 
 always_comb
 begin
-	if ((huif.pc_src == JUMP_DIAOSI) | (huif.pc_src == JR_DIAOSI) | (huif.pc_src == BRANCH_DIAOSI & huif.branch_sel == 1)) begin
+	if (((huif.pc_src == JUMP_DIAOSI) | (huif.pc_src == JR_DIAOSI) | (huif.pc_src == BRANCH_DIAOSI & huif.branch_sel == 1)) & (huif.ihit == 1)) begin
 	   	huif.flushed1 = 1;
 	   	huif.id_en1 = 1;
-	   	huif.flushed2 = 1;
+	   	huif.flushed2 = 1;//1
 	   	huif.id_en2 = 1;
 	   	huif.pc_en = 1;
 	// LW add bubble
-	end else if (huif.opcode == LW || huif.opcode == SW) begin
-		huif.flushed1 = 0;
-	   	huif.id_en1 = 0;
-	   	huif.flushed2 = 1;
-	   	huif.id_en2 = 1;
-	   	huif.pc_en = 0;
-	end else if ((huif.d_ren == 1) & ((huif.wsel == huif.rsel1)|(huif.wsel == huif.rsel2))) begin
-   		huif.flushed1 = 0;
-	   	huif.id_en1 = 1;
-	   	huif.flushed2 = 0;
+	end else if (((huif.opcode == LW || huif.opcode == SW) & ((huif.wsel == huif.rsel1)|(huif.wsel == huif.rsel2))) & (huif.ihit == 1)) begin
+		huif.flushed1 = 0;//0
+	   	huif.id_en1 = 1;//1
+	   	huif.flushed2 = 0;//1
 	   	huif.id_en2 = 1;
 	   	huif.pc_en = 0;
 	end else begin
@@ -36,8 +30,15 @@ begin
 	   	huif.id_en2 = 1;
 	   	huif.pc_en = 1;
 	end
-end
 
+end
+/*else if (((huif.d_ren == 1) & ((huif.wsel == huif.rsel1)|(huif.wsel == huif.rsel2))) & (huif.ihit == 1)) begin
+   		huif.flushed1 = 0;
+	   	huif.id_en1 = 1;
+	   	huif.flushed2 = 0;
+	   	huif.id_en2 = 1;
+	   	huif.pc_en = 0;
+	end*/
 endmodule // hazard_unit
 /*
 logic flushed, pc_en, id_en;

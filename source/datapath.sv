@@ -82,6 +82,7 @@ module datapath (
   //control_unit  change later!! 
   //assign cuif.i_hit     = dcif.ihit;
   assign cuif.instr        = stif.imemload_o1;
+  assign huif.ihit         = dcif.ihit;
   assign huif.pc_src       = stif.PCSrc_o2;
   assign huif.d_ren        = stif.d_ren_o2;
   assign huif.rsel1        = cuif.rsel1;
