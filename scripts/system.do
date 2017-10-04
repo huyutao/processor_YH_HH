@@ -51,9 +51,8 @@ add wave -noupdate -group icache /system_tb/DUT/CPU/dcif/imemload
 add wave -noupdate -group icache /system_tb/DUT/CPU/dcif/imemaddr
 add wave -noupdate -group i1 /system_tb/DUT/CPU/DP/stif/npc_i1
 add wave -noupdate -group i1 /system_tb/DUT/CPU/DP/stif/imemload_i1
-add wave -noupdate -expand -group o1 /system_tb/DUT/CPU/DP/stif/npc_o1
-add wave -noupdate -expand -group o1 /system_tb/DUT/CPU/DP/ID/id/hz_flushed1
-add wave -noupdate -expand -group o1 /system_tb/DUT/CPU/DP/stif/imemload_o1
+add wave -noupdate -group o1 /system_tb/DUT/CPU/DP/stif/npc_o1
+add wave -noupdate -group o1 /system_tb/DUT/CPU/DP/stif/imemload_o1
 add wave -noupdate -group CUIF /system_tb/DUT/CPU/DP/cuif/instr
 add wave -noupdate -group CUIF /system_tb/DUT/CPU/DP/cuif/zero_sel
 add wave -noupdate -group CUIF /system_tb/DUT/CPU/DP/cuif/alu_op
@@ -77,13 +76,10 @@ add wave -noupdate -group rfif /system_tb/DUT/CPU/DP/rfif/rsel2
 add wave -noupdate -group rfif /system_tb/DUT/CPU/DP/rfif/rdat1
 add wave -noupdate -group rfif /system_tb/DUT/CPU/DP/rfif/rdat2
 add wave -noupdate -group huif /system_tb/DUT/CPU/DP/huif/flushed1
-add wave -noupdate -group huif /system_tb/DUT/CPU/DP/huif/id_en1
 add wave -noupdate -group huif /system_tb/DUT/CPU/DP/huif/flushed2
-add wave -noupdate -group huif /system_tb/DUT/CPU/DP/huif/id_en2
 add wave -noupdate -group huif /system_tb/DUT/CPU/DP/huif/opcode
 add wave -noupdate -group huif /system_tb/DUT/CPU/DP/HU/huif/branch_sel
 add wave -noupdate -group huif /system_tb/DUT/CPU/DP/huif/pc_en
-add wave -noupdate -group huif /system_tb/DUT/CPU/DP/huif/d_ren
 add wave -noupdate -group huif /system_tb/DUT/CPU/DP/huif/pc_src
 add wave -noupdate -group huif /system_tb/DUT/CPU/DP/huif/rsel1
 add wave -noupdate -group huif /system_tb/DUT/CPU/DP/huif/rsel2
@@ -109,38 +105,37 @@ add wave -noupdate -group i2 /system_tb/DUT/CPU/DP/stif/j_addr26_i2
 add wave -noupdate -group i2 /system_tb/DUT/CPU/DP/stif/imm16_i2
 add wave -noupdate -group i2 /system_tb/DUT/CPU/DP/stif/alu_op_i2
 add wave -noupdate -group i2 /system_tb/DUT/CPU/DP/stif/shamt_i2
-add wave -noupdate -expand -group o2 /system_tb/DUT/CPU/DP/stif/npc_o2
-add wave -noupdate -expand -group o2 /system_tb/DUT/CPU/DP/DE/de/hz_flushed2
-add wave -noupdate -expand -group o2 /system_tb/DUT/CPU/DP/stif/imemload_o2
-add wave -noupdate -expand -group o2 /system_tb/DUT/CPU/DP/stif/halt_o2
-add wave -noupdate -expand -group o2 /system_tb/DUT/CPU/DP/stif/d_ren_o2
-add wave -noupdate -expand -group o2 /system_tb/DUT/CPU/DP/stif/d_wen_o2
-add wave -noupdate -expand -group o2 /system_tb/DUT/CPU/DP/stif/wen_o2
-add wave -noupdate -expand -group o2 /system_tb/DUT/CPU/DP/stif/zero_sel_o2
-add wave -noupdate -expand -group o2 /system_tb/DUT/CPU/DP/stif/ALUSrc_o2
-add wave -noupdate -expand -group o2 /system_tb/DUT/CPU/DP/stif/W_mux_o2
-add wave -noupdate -expand -group o2 /system_tb/DUT/CPU/DP/stif/PCSrc_o2
-add wave -noupdate -expand -group o2 /system_tb/DUT/CPU/DP/stif/wsel_o2
-add wave -noupdate -expand -group o2 /system_tb/DUT/CPU/DP/stif/shamt_o2
-add wave -noupdate -expand -group o2 /system_tb/DUT/CPU/DP/stif/rsel1_o2
-add wave -noupdate -expand -group o2 /system_tb/DUT/CPU/DP/stif/rsel2_o2
-add wave -noupdate -expand -group o2 /system_tb/DUT/CPU/DP/stif/LUI_o2
-add wave -noupdate -expand -group o2 /system_tb/DUT/CPU/DP/stif/ext32_o2
-add wave -noupdate -expand -group o2 /system_tb/DUT/CPU/DP/stif/rdat1_o2
-add wave -noupdate -expand -group o2 /system_tb/DUT/CPU/DP/stif/rdat2_o2
-add wave -noupdate -expand -group o2 /system_tb/DUT/CPU/DP/stif/j_addr26_o2
-add wave -noupdate -expand -group o2 /system_tb/DUT/CPU/DP/stif/imm16_o2
-add wave -noupdate -expand -group o2 /system_tb/DUT/CPU/DP/stif/alu_op_o2
-add wave -noupdate -expand -group fuif /system_tb/DUT/CPU/DP/fuif/forwardA
-add wave -noupdate -expand -group fuif /system_tb/DUT/CPU/DP/fuif/forwardB
-add wave -noupdate -expand -group fuif /system_tb/DUT/CPU/DP/fuif/store
-add wave -noupdate -expand -group fuif /system_tb/DUT/CPU/DP/fuif/ALUSrc
-add wave -noupdate /system_tb/DUT/CPU/DP/fuif/wen_o3
-add wave -noupdate /system_tb/DUT/CPU/DP/fuif/wen_o4
-add wave -noupdate /system_tb/DUT/CPU/DP/fuif/rsel1_o2
-add wave -noupdate /system_tb/DUT/CPU/DP/fuif/rsel2_o2
-add wave -noupdate /system_tb/DUT/CPU/DP/fuif/wsel_o3
-add wave -noupdate /system_tb/DUT/CPU/DP/fuif/wsel_o4
+add wave -noupdate -group o2 /system_tb/DUT/CPU/DP/stif/npc_o2
+add wave -noupdate -group o2 /system_tb/DUT/CPU/DP/stif/imemload_o2
+add wave -noupdate -group o2 /system_tb/DUT/CPU/DP/stif/halt_o2
+add wave -noupdate -group o2 /system_tb/DUT/CPU/DP/stif/d_ren_o2
+add wave -noupdate -group o2 /system_tb/DUT/CPU/DP/stif/d_wen_o2
+add wave -noupdate -group o2 /system_tb/DUT/CPU/DP/stif/wen_o2
+add wave -noupdate -group o2 /system_tb/DUT/CPU/DP/stif/zero_sel_o2
+add wave -noupdate -group o2 /system_tb/DUT/CPU/DP/stif/ALUSrc_o2
+add wave -noupdate -group o2 /system_tb/DUT/CPU/DP/stif/W_mux_o2
+add wave -noupdate -group o2 /system_tb/DUT/CPU/DP/stif/PCSrc_o2
+add wave -noupdate -group o2 /system_tb/DUT/CPU/DP/stif/wsel_o2
+add wave -noupdate -group o2 /system_tb/DUT/CPU/DP/stif/shamt_o2
+add wave -noupdate -group o2 /system_tb/DUT/CPU/DP/stif/rsel1_o2
+add wave -noupdate -group o2 /system_tb/DUT/CPU/DP/stif/rsel2_o2
+add wave -noupdate -group o2 /system_tb/DUT/CPU/DP/stif/LUI_o2
+add wave -noupdate -group o2 /system_tb/DUT/CPU/DP/stif/ext32_o2
+add wave -noupdate -group o2 /system_tb/DUT/CPU/DP/stif/rdat1_o2
+add wave -noupdate -group o2 /system_tb/DUT/CPU/DP/stif/rdat2_o2
+add wave -noupdate -group o2 /system_tb/DUT/CPU/DP/stif/j_addr26_o2
+add wave -noupdate -group o2 /system_tb/DUT/CPU/DP/stif/imm16_o2
+add wave -noupdate -group o2 /system_tb/DUT/CPU/DP/stif/alu_op_o2
+add wave -noupdate -group fuif /system_tb/DUT/CPU/DP/fuif/forwardA
+add wave -noupdate -group fuif /system_tb/DUT/CPU/DP/fuif/forwardB
+add wave -noupdate -group fuif /system_tb/DUT/CPU/DP/fuif/store
+add wave -noupdate -group fuif /system_tb/DUT/CPU/DP/fuif/wen_o3
+add wave -noupdate -group fuif /system_tb/DUT/CPU/DP/fuif/wen_o4
+add wave -noupdate -group fuif /system_tb/DUT/CPU/DP/fuif/rsel1_o2
+add wave -noupdate -group fuif /system_tb/DUT/CPU/DP/fuif/rsel2_o2
+add wave -noupdate -group fuif /system_tb/DUT/CPU/DP/fuif/wsel_o3
+add wave -noupdate -group fuif /system_tb/DUT/CPU/DP/fuif/wsel_o4
+add wave -noupdate -group fuif /system_tb/DUT/CPU/DP/fuif/ALUSrc
 add wave -noupdate -expand -group aluif /system_tb/DUT/CPU/DP/aluif/zero_flag
 add wave -noupdate -expand -group aluif /system_tb/DUT/CPU/DP/aluif/negative_flag
 add wave -noupdate -expand -group aluif /system_tb/DUT/CPU/DP/aluif/overflow_flag
@@ -165,7 +160,6 @@ add wave -noupdate -group i3 /system_tb/DUT/CPU/DP/stif/dmemstore_i3
 add wave -noupdate -group i3 /system_tb/DUT/CPU/DP/stif/dmemaddr_i3
 add wave -noupdate -group o3 /system_tb/DUT/CPU/DP/stif/npc_o3
 add wave -noupdate -group o3 /system_tb/DUT/CPU/DP/stif/imemload_o3
-add wave -noupdate -group o3 /system_tb/DUT/CPU/DP/stif/flushed
 add wave -noupdate -group o3 /system_tb/DUT/CPU/DP/stif/halt_o3
 add wave -noupdate -group o3 /system_tb/DUT/CPU/DP/stif/d_ren_o3
 add wave -noupdate -group o3 /system_tb/DUT/CPU/DP/stif/d_wen_o3
@@ -213,13 +207,12 @@ add wave -noupdate -group o4 /system_tb/DUT/CPU/DP/stif/branch_addr_o4
 add wave -noupdate -group o4 /system_tb/DUT/CPU/DP/stif/jr_addr_o4
 add wave -noupdate -group o4 /system_tb/DUT/CPU/DP/stif/dmemload_o4
 add wave -noupdate -group o4 /system_tb/DUT/CPU/DP/stif/dmemaddr_o4
-add wave -noupdate -group o4 /system_tb/DUT/CPU/DP/stif/wb_en
 add wave -noupdate -group {rfif wb} /system_tb/DUT/CPU/DP/rfif/WEN
 add wave -noupdate -group {rfif wb} /system_tb/DUT/CPU/DP/rfif/wsel
 add wave -noupdate -group {rfif wb} /system_tb/DUT/CPU/DP/rfif/wdat
 add wave -noupdate -expand /system_tb/DUT/CPU/DP/RF/data
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {2045979 ps} 0}
+WaveRestoreCursors {{Cursor 1} {645464 ps} 0}
 quietly wave cursor active 1
 configure wave -namecolwidth 172
 configure wave -valuecolwidth 100
@@ -235,4 +228,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits ns
 update
-WaveRestoreZoom {1916467 ps} {2993412 ps}
+WaveRestoreZoom {430776 ps} {1507721 ps}

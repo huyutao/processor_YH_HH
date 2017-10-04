@@ -17,7 +17,7 @@ always_comb
 begin
 	huif.flushed1 = 0;
    	huif.pipe1_en = 0;
-   	huif.flushed2 = 0;//1
+   	huif.flushed2 = 0;
    	huif.pipe2_en = 0;
    	huif.pc_en = 0;
    	if (huif.ihit)
@@ -30,8 +30,9 @@ begin
 		   	huif.flushed2 = 1;
 		// LW add bubble
 		end else if ((huif.opcode == LW || huif.opcode == SW) & ((huif.wsel == huif.rsel1)|(huif.wsel == huif.rsel2))) begin
-			huif.flushed1 = 0;
-		   	huif.flushed2 = 0;
+		   	huif.flushed2 = 1;
+		   	huif.pipe1_en = 0;
+	   		huif.pipe2_en = 0;
 		   	huif.pc_en = 0;
 		end
 	end

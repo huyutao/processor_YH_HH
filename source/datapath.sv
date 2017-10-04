@@ -78,8 +78,8 @@ module datapath (
   assign stif.flushed2     = huif.flushed2; 
   //assign stif.flushed3        = dcif.dhit;
   assign stif.flushed3     = huif.flushed3; 
-  assign stif.pipe1_en        = huif.pipe1_en & dcif.ihit;
-  assign stif.pipe2_en        = huif.pipe2_en & dcif.ihit;
+  assign stif.pipe1_en        = huif.pipe1_en;
+  assign stif.pipe2_en        = huif.pipe2_en;
   assign stif.pipe3_en        = huif.pipe3_en;
   assign stif.pipe4_en        = huif.pipe4_en;
   //control_unit  change later!! 
