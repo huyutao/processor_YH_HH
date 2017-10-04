@@ -13,7 +13,7 @@ interface stage_if;
   // import types
   import cpu_types_pkg::*;
   import diaosi_types_pkg::*; // don't forget add ;
-  logic       en, flushed, wb_en, id_en1, id_en2,
+  logic       en, flushed, wb_en, pipe1_en, pipe2_en, pipe3_en, pipe4_en,
               halt_i2, halt_o2, halt_i3, halt_o3,
   			      d_ren_i2, d_ren_o2, d_ren_i3, d_ren_o3, d_ren_i4, d_ren_o4,
   			      d_wen_i2, d_wen_o2, d_wen_i3, d_wen_o3,
@@ -51,12 +51,12 @@ interface stage_if;
   aluop_t     alu_op_i2, alu_op_o2;
 
   modport if_dc (
-  	input   npc_i1, id_en1, imemload_i1, hz_flushed1,
+  	input   npc_i1, pipe1_en, imemload_i1, hz_flushed1,
   	output  npc_o1, imemload_o1
   );
 
   modport dc_ex (
-  	input  id_en2, npc_i2, ext32_i2, j_addr26_i2, imm16_i2, LUI_i2, zero_sel_i2,PCSrc_i2,
+  	input  pipe2_en, npc_i2, ext32_i2, j_addr26_i2, imm16_i2, LUI_i2, zero_sel_i2,PCSrc_i2,
   	ALUSrc_i2, W_mux_i2,  shamt_i2, halt_i2, d_ren_i2, d_wen_i2, wen_i2, 
   	wsel_i2, alu_op_i2, rdat1_i2, rdat2_i2, imemload_i2, rsel1_i2, rsel2_i2,hz_flushed2,
 
@@ -66,7 +66,7 @@ interface stage_if;
   );
 
   modport ex_mem (
-  	input  en, flushed, jump_addr_i3, npc_i3, branch_addr_i3, jr_addr_i3, PCSrc_i3, W_mux_i3, 
+  	input  pipe3_en, flushed, jump_addr_i3, npc_i3, branch_addr_i3, jr_addr_i3, PCSrc_i3, W_mux_i3, 
   	LUI_i3, wen_i3, wsel_i3, d_wen_i3, d_ren_i3, dmemstore_i3,
   	halt_i3, dmemaddr_i3,imemload_i3,
 
@@ -76,7 +76,7 @@ interface stage_if;
   );
 
   modport mem_wb (
-  	input  wb_en, jump_addr_i4, npc_i4, branch_addr_i4, jr_addr_i4, PCSrc_i4, W_mux_i4, 
+  	input  pipe4_en, jump_addr_i4, npc_i4, branch_addr_i4, jr_addr_i4, PCSrc_i4, W_mux_i4, 
   	LUI_i4, wen_i4, wsel_i4, dmemload_i4, 
   	dmemaddr_i4, imemload_i4, d_ren_i4,
   	output jump_addr_o4, npc_o4, branch_addr_o4, jr_addr_o4, PCSrc_o4, W_mux_o4, 

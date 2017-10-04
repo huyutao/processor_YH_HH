@@ -77,14 +77,16 @@ module datapath (
   assign stif.en           = dcif.ihit;  //en
   assign stif.hz_flushed1   = huif.flushed1; 
   assign stif.hz_flushed2   = huif.flushed2; 
-  assign stif.id_en1        = huif.id_en1 & dcif.ihit;
-  assign stif.id_en2        = huif.id_en2 & dcif.ihit;
+  assign stif.pipe1_en        = huif.pipe1_en;
+  assign stif.pipe2_en        = huif.pipe2_en;
+  assign stif.pipe3_en        = huif.pipe3_en;
+  assign stif.pipe4_en        = huif.pipe4_en;
   //control_unit  change later!! 
   //assign cuif.i_hit     = dcif.ihit;
   assign cuif.instr        = stif.imemload_o1;
   assign huif.ihit         = dcif.ihit;
   assign huif.pc_src       = stif.PCSrc_o2;
-  assign huif.d_ren        = stif.d_ren_o2;
+  assign huif.dhit        = dcif.dhit;
   assign huif.rsel1        = cuif.rsel1;
   assign huif.rsel2        = cuif.rsel2;
   assign huif.wsel         = stif.wsel_o2;
@@ -184,6 +186,12 @@ module datapath (
       RDAT_DS:          aluif.b      = rdatB;
       default:          aluif.b      = rdatB;
     endcase 
+    casez(fuif.store)  
+      RDAT2_STORE_O2_DIAOSI:           stif.dmemstore_i3  = stif.rdat2_o2;
+      DMEMADDR_STORE_O3_DIAOSI:        stif.dmemstore_i3  = stif.dmemaddr_o3;
+      DMEMADDR_STORE_O4_DIAOSI:        stif.dmemstore_i3  = stif.dmemaddr_o4;
+      default:                         stif.dmemstore_i3  = stif.rdat2_o2;
+    endcase 
   end 
   //assign aluif.a            = stif.rdat1_o2;
 
@@ -209,8 +217,8 @@ module datapath (
   begin
     casez(branch_sel)  
       1'b1:    stif.branch_addr_i3     = pc1 + stif.npc_o2;
-      1'b0:    stif.branch_addr_i3     = stif.npc_o2;    
-      default: stif.branch_addr_i3     = stif.npc_o2;           
+      1'b0:    stif.branch_addr_i3     = stif.npc_i1;    
+      default: stif.branch_addr_i3     = stif.npc_i1;           
     endcase 
   end    
   assign stif.jr_addr_i3     = stif.rdat1_o2;
@@ -221,7 +229,7 @@ module datapath (
   assign stif.wsel_i3        = stif.wsel_o2;
   assign stif.d_wen_i3       = stif.d_wen_o2;
   assign stif.d_ren_i3       = stif.d_ren_o2;
-  assign stif.dmemstore_i3   = (fuif.store == RDAT2_DS)? stif.rdat2_o2: stif.dmemaddr_o3;
+  //assign stif.dmemstore_i3   = (fuif.store == RDAT2_DS)? stif.rdat2_o2: stif.dmemaddr_o3;
   assign stif.halt_i3        = stif.halt_o2;
   assign stif.dmemaddr_i3    = aluif.out;
   //dcache
