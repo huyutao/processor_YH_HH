@@ -42,7 +42,7 @@ always_ff@(posedge CLK, negedge nRST) begin
         de.rsel2_o2    <= '{default:0};
 	end 
   	else begin
-        if (de.hz_flushed2) begin
+        if (de.flushed2) begin
             de.npc_o2      <= '{default:0};
             de.ext32_o2    <= '{default:0};
             de.j_addr26_o2 <= '{default:0};

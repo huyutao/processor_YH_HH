@@ -8,36 +8,42 @@ module hazard_unit (
 import cpu_types_pkg::*;
 import diaosi_types_pkg::*;
 
+
+assign huif.pipe3_en = huif.ihit;
+assign huif.pipe4_en = huif.ihit | huif.dhit;
+assign huif.flushed3 = huif.dhit;
+
 always_comb
 begin
-	huif.pipe1_en = 0;
-	huif.pipe2_en = 0;
-	huif.pipe3_en = 0;
-	huif.pipe4_en = 0;
-	huif.flushed1 = 0;
-	huif.flushed2 = 0;
-	if (huif.ihit == 1)
-	begin
-		huif.pipe1_en = 1;
-		huif.pipe2_en = 1;
-		huif.pipe3_en = 1;
-   		huif.pipe4_en = 1;
-   		huif.flushed1 = 0;
-		huif.flushed2 = 0;
-   		huif.pc_en = 1;
-		if ((huif.pc_src == JUMP_DIAOSI) | (huif.pc_src == JR_DIAOSI) | (huif.pc_src == BRANCH_DIAOSI & huif.branch_sel == 1)) begin
-		   	huif.flushed1 = 1;
-		   	huif.flushed2 = 1;
-		end 
-		else if (((huif.opcode == LW) & ((huif.wsel == huif.rsel1)|(huif.wsel == huif.rsel2)))) begin
-		   	huif.pc_en = 0;
-		end
+	if (((huif.pc_src == JUMP_DIAOSI) | (huif.pc_src == JR_DIAOSI) | (huif.pc_src == BRANCH_DIAOSI & huif.branch_sel == 1)) & (huif.ihit == 1)) begin
+	   	huif.flushed1 = 1;
+	   	huif.pipe1_en = 1;
+	   	huif.flushed2 = 1;//1
+	   	huif.pipe2_en = 1;
+	   	huif.pc_en = 1;
+	// LW add bubble
+	end else if (((huif.opcode == LW || huif.opcode == SW) & ((huif.wsel == huif.rsel1)|(huif.wsel == huif.rsel2))) & (huif.ihit == 1)) begin
+		huif.flushed1 = 0;//0
+	   	huif.pipe1_en = 1;//1
+	   	huif.flushed2 = 0;//1
+	   	huif.pipe2_en = 1;
+	   	huif.pc_en = 0;
+	end else begin
+	   	huif.flushed1 = 0;
+	   	huif.pipe1_en = 1;
+	   	huif.flushed2 = 0;
+	   	huif.pipe2_en = 1;
+	   	huif.pc_en = 1;
 	end
-	if (huif.dhit == 1)
-	begin
-		huif.pipe3_en = 1;
-	end
+
 end
+/*else if (((huif.d_ren == 1) & ((huif.wsel == huif.rsel1)|(huif.wsel == huif.rsel2))) & (huif.ihit == 1)) begin
+   		huif.flushed1 = 0;
+	   	huif.id_en1 = 1;
+	   	huif.flushed2 = 0;
+	   	huif.id_en2 = 1;
+	   	huif.pc_en = 0;
+	end*/
 endmodule // hazard_unit
 /*
 logic flushed, pc_en, id_en;

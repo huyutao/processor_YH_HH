@@ -32,8 +32,8 @@ package diaosi_types_pkg;
 	OUT4_DIAOSI, OUT3_DIAOSI, RDAT_DS
 	} Forward_t;
 
-	typedef enum logic [1:0]{
-	RDAT2_STORE_O2_DIAOSI, DMEMADDR_STORE_O3_DIAOSI, DMEMADDR_STORE_O4_DIAOSI
+	typedef enum logic {
+	RDAT2_DS, Dmemaddr_DS
 	} Store_t;
 
 	typedef enum logic [1:0]{

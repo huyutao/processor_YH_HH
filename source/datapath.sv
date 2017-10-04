@@ -74,10 +74,12 @@ module datapath (
   //if_dc 
   assign stif.npc_i1       = pcif.npc;
   assign stif.imemload_i1  = dcif.imemload;
-  assign stif.hz_flushed1   = huif.flushed1; 
-  assign stif.hz_flushed2   = huif.flushed2; 
-  assign stif.pipe1_en        = huif.pipe1_en;
-  assign stif.pipe2_en        = huif.pipe2_en;
+  assign stif.flushed1     = huif.flushed1; 
+  assign stif.flushed2     = huif.flushed2; 
+  //assign stif.flushed3        = dcif.dhit;
+  assign stif.flushed3     = huif.flushed3; 
+  assign stif.pipe1_en        = huif.pipe1_en & dcif.ihit;
+  assign stif.pipe2_en        = huif.pipe2_en & dcif.ihit;
   assign stif.pipe3_en        = huif.pipe3_en;
   assign stif.pipe4_en        = huif.pipe4_en;
   //control_unit  change later!! 
@@ -185,12 +187,6 @@ module datapath (
       RDAT_DS:          aluif.b      = rdatB;
       default:          aluif.b      = rdatB;
     endcase 
-    casez(fuif.store)  
-      RDAT2_STORE_O2_DIAOSI:           stif.dmemstore_i3  = stif.rdat2_o2;
-      DMEMADDR_STORE_O3_DIAOSI:        stif.dmemstore_i3  = stif.dmemaddr_o3;
-      DMEMADDR_STORE_O4_DIAOSI:        stif.dmemstore_i3  = stif.dmemaddr_o4;
-      default:                         stif.dmemstore_i3  = stif.rdat2_o2;
-    endcase 
   end 
   //assign aluif.a            = stif.rdat1_o2;
 
@@ -208,7 +204,6 @@ module datapath (
   end   
   assign pc1 = {{16{stif.imm16_o2[15]}}, stif.imm16_o2[15:0]}<<2;
   //ex_mem
-  assign stif.flushed        = dcif.dhit;
   assign stif.jump_addr_i3   = stif.npc_o2[31:28]<<28 |  stif.j_addr26_o2<<2;
   assign stif.npc_i3         = stif.npc_o2;
   assign stif.imemload_i3    = stif.imemload_o2;
@@ -216,8 +211,8 @@ module datapath (
   begin
     casez(branch_sel)  
       1'b1:    stif.branch_addr_i3     = pc1 + stif.npc_o2;
-      1'b0:    stif.branch_addr_i3     = stif.npc_i1;    
-      default: stif.branch_addr_i3     = stif.npc_i1;           
+      1'b0:    stif.branch_addr_i3     = stif.npc_o2;    
+      default: stif.branch_addr_i3     = stif.npc_o2;           
     endcase 
   end    
   assign stif.jr_addr_i3     = stif.rdat1_o2;
@@ -228,7 +223,7 @@ module datapath (
   assign stif.wsel_i3        = stif.wsel_o2;
   assign stif.d_wen_i3       = stif.d_wen_o2;
   assign stif.d_ren_i3       = stif.d_ren_o2;
-  //assign stif.dmemstore_i3   = (fuif.store == RDAT2_DS)? stif.rdat2_o2: stif.dmemaddr_o3;
+  assign stif.dmemstore_i3   = (fuif.store == RDAT2_DS)? stif.rdat2_o2: stif.dmemaddr_o3;
   assign stif.halt_i3        = stif.halt_o2;
   assign stif.dmemaddr_i3    = aluif.out;
   //dcache
