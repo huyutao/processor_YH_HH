@@ -74,7 +74,6 @@ module datapath (
   //if_dc 
   assign stif.npc_i1       = pcif.npc;
   assign stif.imemload_i1  = dcif.imemload;
-  assign stif.en           = dcif.ihit;  //en
   assign stif.hz_flushed1   = huif.flushed1; 
   assign stif.hz_flushed2   = huif.flushed2; 
   assign stif.pipe1_en        = huif.pipe1_en;
@@ -248,7 +247,6 @@ module datapath (
   //mem_wb
   assign stif.imemload_i4    = stif.imemload_o3;
   assign stif.d_ren_i4       = stif.d_ren_o3;
-  assign stif.wb_en          = dcif.ihit | dcif.dhit;
   assign stif.jump_addr_i4   = stif.jump_addr_o3;
   assign stif.npc_i4         = stif.npc_o3;
   assign stif.branch_addr_i4 = stif.branch_addr_o3; 

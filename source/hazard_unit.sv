@@ -10,21 +10,20 @@ import diaosi_types_pkg::*;
 
 always_comb
 begin
+	huif.pipe1_en = 0;
+	huif.pipe2_en = 0;
+	huif.pipe3_en = 0;
+	huif.pipe4_en = 0;
 	huif.flushed1 = 0;
-   	huif.pipe1_en = 0;
-   	huif.flushed2 = 0;
-   	huif.pipe2_en = 0;
-   	huif.pc_en = 0;
-   	huif.pipe3_en = 0;
-   	huif.pipe4_en = 0;
-
-
-	if (huif.ihit == 1 || huif.dhit == 1)
+	huif.flushed2 = 0;
+	if (huif.ihit == 1)
 	begin
 		huif.pipe1_en = 1;
 		huif.pipe2_en = 1;
 		huif.pipe3_en = 1;
    		huif.pipe4_en = 1;
+   		huif.flushed1 = 0;
+		huif.flushed2 = 0;
    		huif.pc_en = 1;
 		if ((huif.pc_src == JUMP_DIAOSI) | (huif.pc_src == JR_DIAOSI) | (huif.pc_src == BRANCH_DIAOSI & huif.branch_sel == 1)) begin
 		   	huif.flushed1 = 1;
@@ -36,12 +35,7 @@ begin
 	end
 	if (huif.dhit == 1)
 	begin
-		huif.pipe1_en = 1;
-		huif.pipe2_en = 1;
 		huif.pipe3_en = 1;
-   		huif.pipe4_en = 1;
-   		huif.flushed1 = 1;
-   		huif.pc_en = 0;
 	end
 end
 endmodule // hazard_unit
