@@ -93,6 +93,9 @@ module datapath (
   assign huif.wsel         = stif.wsel_o2;
   assign huif.branch_sel   = branch_sel;
   assign huif.opcode       = opcode_t'(stif.imemload_o2[31:26]);
+  assign huif.rfrt         = cuif.rsel2;
+  assign huif.rfrs         = cuif.rsel1;
+  assign huif.wsel_o3      = stif.wsel_o3;      
   //register file
   always_comb
     begin

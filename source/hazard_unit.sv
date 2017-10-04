@@ -33,17 +33,16 @@ begin
 		   	huif.flushed2 = 1;
 		   	huif.pipe1_en = 0;
 	   		huif.pipe2_en = 0;
-		   	huif.pc_en = 0;
-		end
+		   	huif.pc_en = 0; 
+		end else if (((huif.wsel_o3 == huif.rfrs) || (huif.wsel_o3 == huif.rfrt)) & (huif.opcode == LW || huif.opcode == SW)) begin
+		   	huif.flushed2 = 1;
+		   	huif.pipe1_en = 0;
+	   		huif.pipe2_en = 0;
+		   	huif.pc_en = 0;			
+		end	
 	end
 end
-/*else if (((huif.d_ren == 1) & ((huif.wsel == huif.rsel1)|(huif.wsel == huif.rsel2))) & (huif.ihit == 1)) begin
-   		huif.flushed1 = 0;
-	   	huif.id_en1 = 1;
-	   	huif.flushed2 = 0;
-	   	huif.id_en2 = 1;
-	   	huif.pc_en = 0;
-	end*/
+
 endmodule // hazard_unit
 /*
 logic flushed, pc_en, id_en;
