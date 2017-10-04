@@ -34,7 +34,7 @@ always_ff@(posedge CLK, negedge nRST) begin
 		mw.d_ren_o4          <= '{default:0};
 	end // if (!nRST)
 	else begin
-		if (mw.wb_en == 1) begin
+		if (mw.pipe4_en == 1) begin
 			mw.jump_addr_o4      <= mw.jump_addr_i4;
 			mw.npc_o4            <= mw.npc_i4;
 			mw.branch_addr_o4    <= mw.branch_addr_i4;

@@ -23,11 +23,11 @@ always_ff@(posedge CLK, negedge nRST) begin
 		id.imemload_o1 <= '{default:0};
 	end 
   else begin
-      if (id.hz_flushed1) begin
+      if (id.flushed1) begin
         id.npc_o1 <= id.npc_o1;
         id.imemload_o1 <= '{default:0};
 
-    	end else if (id.id_en1 == 1) begin
+    	end else if (id.pipe1_en == 1) begin
         id.npc_o1 <= id.npc_i1;
     		id.imemload_o1 <= id.imemload_i1;
     	end 

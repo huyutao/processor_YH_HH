@@ -74,17 +74,20 @@ module datapath (
   //if_dc 
   assign stif.npc_i1       = pcif.npc;
   assign stif.imemload_i1  = dcif.imemload;
-  assign stif.en           = dcif.ihit;  //en
-  assign stif.hz_flushed1   = huif.flushed1; 
-  assign stif.hz_flushed2   = huif.flushed2; 
-  assign stif.id_en1        = huif.id_en1 & dcif.ihit;
-  assign stif.id_en2        = huif.id_en2 & dcif.ihit;
+  assign stif.flushed1     = huif.flushed1; 
+  assign stif.flushed2     = huif.flushed2; 
+  //assign stif.flushed3        = dcif.dhit;
+  assign stif.flushed3     = huif.flushed3; 
+  assign stif.pipe1_en        = huif.pipe1_en & dcif.ihit;
+  assign stif.pipe2_en        = huif.pipe2_en & dcif.ihit;
+  assign stif.pipe3_en        = huif.pipe3_en;
+  assign stif.pipe4_en        = huif.pipe4_en;
   //control_unit  change later!! 
   //assign cuif.i_hit     = dcif.ihit;
   assign cuif.instr        = stif.imemload_o1;
   assign huif.ihit         = dcif.ihit;
   assign huif.pc_src       = stif.PCSrc_o2;
-  assign huif.d_ren        = stif.d_ren_o2;
+  assign huif.dhit        = dcif.dhit;
   assign huif.rsel1        = cuif.rsel1;
   assign huif.rsel2        = cuif.rsel2;
   assign huif.wsel         = stif.wsel_o2;
@@ -201,7 +204,6 @@ module datapath (
   end   
   assign pc1 = {{16{stif.imm16_o2[15]}}, stif.imm16_o2[15:0]}<<2;
   //ex_mem
-  assign stif.flushed        = dcif.dhit;
   assign stif.jump_addr_i3   = stif.npc_o2[31:28]<<28 |  stif.j_addr26_o2<<2;
   assign stif.npc_i3         = stif.npc_o2;
   assign stif.imemload_i3    = stif.imemload_o2;
@@ -240,7 +242,6 @@ module datapath (
   //mem_wb
   assign stif.imemload_i4    = stif.imemload_o3;
   assign stif.d_ren_i4       = stif.d_ren_o3;
-  assign stif.wb_en          = dcif.ihit | dcif.dhit;
   assign stif.jump_addr_i4   = stif.jump_addr_o3;
   assign stif.npc_i4         = stif.npc_o3;
   assign stif.branch_addr_i4 = stif.branch_addr_o3; 

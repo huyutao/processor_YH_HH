@@ -36,7 +36,7 @@ always_ff@(posedge CLK, negedge nRST) begin
 		em.imemload_o3     <= '{default:0};
 	end
 	else begin
-		if (em.flushed == 1) begin 
+		if (em.flushed3 == 1) begin 
 			em.jump_addr_o3    <= '{default:0};
 			em.npc_o3 		   <= '{default:0};
 			em.branch_addr_o3  <= '{default:0};
@@ -53,7 +53,7 @@ always_ff@(posedge CLK, negedge nRST) begin
 			em.dmemaddr_o3     <= '{default:0};
 			em.imemload_o3     <= '{default:0};
 		end 
-		else if (em.en == 1) begin
+		else if (em.pipe3_en == 1) begin
  			em.jump_addr_o3    <= em.jump_addr_i3;
 			em.npc_o3 		   <= em.npc_i3;
 			em.branch_addr_o3  <= em.branch_addr_i3;
