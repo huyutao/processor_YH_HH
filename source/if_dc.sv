@@ -19,13 +19,13 @@ import cpu_types_pkg::*;
 
 always_ff@(posedge CLK, negedge nRST) begin
 	if (!nRST) begin
-		id.npc_o1 <= '{default:0};
-		id.imemload_o1 <= '{default:0};
+		id.npc_o1 <= 0;
+		id.imemload_o1 <= 0;
 	end 
   else begin
       if (id.flushed1) begin
         id.npc_o1 <= id.npc_o1;
-        id.imemload_o1 <= '{default:0};
+        id.imemload_o1 <= 0;
 
     	end else if (id.pipe1_en == 1) begin
         id.npc_o1 <= id.npc_i1;

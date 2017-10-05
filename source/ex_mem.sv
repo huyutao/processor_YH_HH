@@ -19,39 +19,39 @@ import diaosi_types_pkg::*;
 
 always_ff@(posedge CLK, negedge nRST) begin
 	if (!nRST) begin
-		em.jump_addr_o3    <= '{default:0};
-		em.npc_o3 		   <= '{default:0};
-		em.branch_addr_o3  <= '{default:0};
-		em.jr_addr_o3      <= '{default:0};
+		em.jump_addr_o3    <= 0;
+		em.npc_o3 		   <= 0;
+		em.branch_addr_o3  <= 0;
+		em.jr_addr_o3      <= 0;
 		em.PCSrc_o3        <= ADD4_DIAOSI;
 		em.W_mux_o3        <= LUI_DIAOSI;
-		em.LUI_o3          <= '{default:0};
-		em.wen_o3          <= '{default:0};
-		em.wsel_o3         <= '{default:0};
-		em.d_wen_o3        <= '{default:0};
-		em.d_ren_o3        <= '{default:0};
-		em.dmemstore_o3    <= '{default:0};
-		em.halt_o3         <= '{default:0};
-		em.dmemaddr_o3     <= '{default:0};
-		em.imemload_o3     <= '{default:0};
+		em.LUI_o3          <= 0;
+		em.wen_o3          <= 0;
+		em.wsel_o3         <= 0;
+		em.d_wen_o3        <= 0;
+		em.d_ren_o3        <= 0;
+		em.dmemstore_o3    <= 0;
+		em.halt_o3         <= 0;
+		em.dmemaddr_o3     <= 0;
+		em.imemload_o3     <= 0;
 	end
 	else begin
 		if (em.flushed3 == 1) begin 
-			em.jump_addr_o3    <= '{default:0};
-			em.npc_o3 		   <= '{default:0};
-			em.branch_addr_o3  <= '{default:0};
-			em.jr_addr_o3      <= '{default:0};
+			em.jump_addr_o3    <= 0;
+			em.npc_o3 		   <= 0;
+			em.branch_addr_o3  <= 0;
+			em.jr_addr_o3      <= 0;
 			em.PCSrc_o3        <= ADD4_DIAOSI;
 			em.W_mux_o3        <= LUI_DIAOSI;;
-			em.LUI_o3          <= '{default:0};
-			em.wen_o3          <= '{default:0};
-			em.wsel_o3         <= '{default:0};
-			em.d_wen_o3        <= '{default:0};
-			em.d_ren_o3        <= '{default:0};
-			em.dmemstore_o3    <= '{default:0};
-			em.halt_o3         <= '{default:0};  
-			em.dmemaddr_o3     <= '{default:0};
-			em.imemload_o3     <= '{default:0};
+			em.LUI_o3          <= 0;
+			em.wen_o3          <= 0;
+			em.wsel_o3         <= 0;
+			em.d_wen_o3        <= 0;
+			em.d_ren_o3        <= 0;
+			em.dmemstore_o3    <= 0;
+			em.halt_o3         <= 0;  
+			em.dmemaddr_o3     <= 0;
+			em.imemload_o3     <= 0;
 		end 
 		else if (em.pipe3_en == 1) begin
  			em.jump_addr_o3    <= em.jump_addr_i3;

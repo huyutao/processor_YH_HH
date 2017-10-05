@@ -19,19 +19,19 @@ import diaosi_types_pkg::*;
 
 always_ff@(posedge CLK, negedge nRST) begin
 	if (!nRST) begin
-		mw.jump_addr_o4      <= '{default:0};
-		mw.npc_o4            <= '{default:0};
-		mw.branch_addr_o4    <= '{default:0};
-		mw.jr_addr_o4        <= '{default:0};
+		mw.jump_addr_o4      <= 0;
+		mw.npc_o4            <= 0;
+		mw.branch_addr_o4    <= 0;
+		mw.jr_addr_o4        <= 0;
 		mw.PCSrc_o4          <= ADD4_DIAOSI;
 		mw.W_mux_o4          <= LUI_DIAOSI;
-		mw.LUI_o4            <= '{default:0};
-		mw.wen_o4            <= '{default:0};
-		mw.wsel_o4           <= '{default:0};
-		mw.dmemload_o4       <= '{default:0};
-		mw.dmemaddr_o4       <= '{default:0};   
-		mw.imemload_o4       <= '{default:0};   
-		mw.d_ren_o4          <= '{default:0};
+		mw.LUI_o4            <= 0;
+		mw.wen_o4            <= 0;
+		mw.wsel_o4           <= 0;
+		mw.dmemload_o4       <= 0;
+		mw.dmemaddr_o4       <= 0;   
+		mw.imemload_o4       <= 0;   
+		mw.d_ren_o4          <= 0;
 	end // if (!nRST)
 	else begin
 		if (mw.pipe4_en == 1) begin
