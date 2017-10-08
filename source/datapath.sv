@@ -245,7 +245,12 @@ module datapath (
     if (1'b0 == nRST)
       dcif.halt <= 0;
     else
-      dcif.halt <= stif.halt_o3;
+    begin
+      if (dcif.halt)
+        dcif.halt <= 1;
+      else
+        dcif.halt <= stif.halt_o3;
+    end
   end
 
   //mem_wb
