@@ -82,6 +82,7 @@ When we simulated the mergesort.asm, we figured out there was part of results di
       The Latency of of instructions(ns) & 28.77 & 96.30 \\ \hline
       The total execution time(ns) & 1190647 & 1168143 \\ \hline
       The instruction number & 5399 & 5399 \\ \hline
+      The Ram Latency & 3 & 3 \\ \hline
       Average instructions per cycle & 0.13 & 0.089 \\ \hline
       FPGA Resources \\ \hline
       Total combinational Functions & 2,919 / 114,480 (0.03) & 3,357 / 114,480 (0.03) \\ \hline
