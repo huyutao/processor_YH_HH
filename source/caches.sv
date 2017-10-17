@@ -25,9 +25,9 @@ module caches (
 
 
   // icache
-  icache  ICACHE(dcif, cif);
+  icache  ICACHE(dcif, cif, CLK, nRST);
   // dcache
-  dcache  DCACHE(dcif, cif);
+  dcache  DCACHE(dcif, cif, CLK, nRST);
 
 
 endmodule
