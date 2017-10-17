@@ -45,11 +45,11 @@ package diaosi_types_pkg;
 	} OUT3_t;
 
 	typedef enum logic {
-	IDLE, ld 
+	IDLE, LD  
 	} dstate_t;
 
 	typedef enum logic {
-	IDLE, ld1, ld2, wb1, wb2, clean, flush1, flush2, hlt_cnt, halt, cnt
+	IDLE, LD1, LD2, WB1, WB2, CLEAN, FLUSH1, FLUSH2, HLT_CNT, HALT, CNT
 	} istate_t;
 
   	typedef struct packed {

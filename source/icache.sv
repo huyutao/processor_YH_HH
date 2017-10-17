@@ -74,9 +74,9 @@ always_comb begin
 		data = icf.iload;
 		valid = instr[iaddr.idx].valid;	
 		if (!hit)
-			next_state = ld;
+			next_state = LD;
 		end
-		ld:
+		LD:
 		begin
 			icf.iREN = 1;
 			tag = instr[iaddr.idx].tag;

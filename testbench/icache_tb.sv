@@ -46,6 +46,41 @@ import cpu_types_pkg::*;
 
 	int Num;	
 
-	icache_tb.nRST = 1;
-    
-
+	icache_tb.nRST = 0;
+	icache_tb.dcif.imemREN = 0;
+	icache_tb.dcif.imemaddr = 0;
+	icache_tb.cif.iwait = 0;
+	icache_tb.cif.iload = 0;
+    #(PERIOD);
+    icache_tb.nRST = 1;
+ 	icache_tb.dcif.imemREN = 1'b1;
+    #(PERIOD);
+//read 111110
+	icache_tb.dcif.imemaddr = 32'b111110;
+	icache_tb.cif.iwait = 0;
+	icache_tb.cif.iload = 32'b10101010;
+    #(PERIOD);
+	icache_tb.cif.iwait = 1;
+    #(PERIOD);
+ 	icache_tb.dcif.imemREN = 1'b1;
+    #(PERIOD);
+//read 1111111010
+	icache_tb.dcif.imemaddr = 32'b1111111010;
+	icache_tb.cif.iwait = 0;
+	icache_tb.cif.iload = 32'b10101010;
+    #(PERIOD);
+	icache_tb.cif.iwait = 1;
+    #(PERIOD);
+//read 111110
+	icache_tb.dcif.imemaddr = 32'b111110;
+	icache_tb.cif.iwait = 0;
+    #(PERIOD);
+//read 1111110 change tag
+	icache_tb.dcif.imemaddr = 32'b1111110;
+	icache_tb.cif.iwait = 0;
+	icache_tb.cif.iload = 32'b101010100;
+    #(PERIOD);
+	icache_tb.cif.iwait = 1;
+    #(PERIOD);
+  end
+ endprogram
