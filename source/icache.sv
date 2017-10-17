@@ -22,9 +22,9 @@ integer     i;
 
 
 icachef_t iaddr;
-assign iaddr.tag = icf.iload[31:6];
-assign iaddr.idx = icf.iload[5:2];
-assign iaddr.bytoff = icf.iload[1:0];
+assign iaddr.tag = dcif.imemaddr[31:6];
+assign iaddr.idx = dcif.imemaddr[5:2];
+assign iaddr.bytoff = dcif.imemaddr[1:0];
 assign dcif.imemload = frame[iaddr.idx].data;
 assign icf.iaddr =  dcif.imemaddr;
 assign dcif.ihit = hit;
@@ -67,25 +67,23 @@ end // always_comb
 always_comb begin
 	icf.iREN = 0;
 	if (dcif.imemREN == 0) begin
-		next_frame.tag = frame[iaddr.idx].tag;
-		next_frame.data = frame[iaddr.idx].data;
-		next_frame.valid = frame[iaddr.idx].valid;
+		next_frame.tag	<= frame[iaddr.idx].tag;
+		next_frame.data   <= frame[iaddr.idx].data;
+		next_frame.valid  <= frame[iaddr.idx].valid;
 	end else begin
 		casez (state) 
 		IDLE_I:
 		begin
-		next_frame.tag = iaddr.tag;
-		next_frame.data = icf.iload;
-		next_frame.valid = frame[iaddr.idx].valid;	
+
 		if (!hit)
 			next_state = LD;
 		end
 		LD:
 		begin
 			icf.iREN = 1;
-			next_frame.tag = frame[iaddr.idx].tag;
-			next_frame.data = frame[iaddr.idx].data;
-			next_frame.valid = 1;	
+			next_frame.tag = iaddr.tag;
+			next_frame.data = icf.iload;
+			next_frame.valid = 1;
 			if (!icf.iwait)
 				next_state = IDLE_I;
 		end
