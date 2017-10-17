@@ -44,7 +44,7 @@ endmodule
 program test;
 
 import cpu_types_pkg::*;
-
+  parameter PERIOD = 10;
   initial begin
   dcache_tb.nRST = 0;
   dcache_tb.dcif.halt = 0;
