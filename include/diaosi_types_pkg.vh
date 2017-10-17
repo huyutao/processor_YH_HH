@@ -45,24 +45,24 @@ package diaosi_types_pkg;
 	} OUT3_t;
 
 	typedef enum logic {
-	IDLE, LD  
-	} dstate_t;
+	IDLE_I, LD  
+	} Istate_t;
 
-	typedef enum logic {
-	IDLE, LD1, LD2, WB1, WB2, CLEAN, FLUSH1, FLUSH2, HLT_CNT, HALT, CNT
-	} istate_t;
+	typedef enum logic [3:0] {
+	IDLE_D, LD1, LD2, WB1, WB2, CLEAN, FLUSH1, FLUSH2, HLT_CNT, HALT, CNT
+	} Dstate_t;
 
   	typedef struct packed {
     	logic [25:0]  tag;
     	logic		  valid;
     	logic [31:0]  data;
-  	} icache_t;
+  	} Icache_t;
 
   	typedef struct packed {
     	logic [25:0]  tag;
     	logic 		  valid, dirty;    
     	logic [31:0]  data1;
     	logic [31:0]  data2;
-  	} dcache_t;
+  	} Dcache_t;
 endpackage
 `endif

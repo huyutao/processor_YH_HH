@@ -16,22 +16,27 @@ module icache (
 import cpu_types_pkg::*;
 import diaosi_types_pkg::*;
 
-logic 		hit;
+logic 		valid,hit;
+integer     i;
+logic  [25:0] tag;
+logic  [31:0] data;
+
+
 
 icachef_t iaddr;
 assign iaddr.tag = icf.iload[31:6];
 assign iaddr.idx = icf.iload[5:2];
 assign iaddr.bytoff = icf.iload[1:0];
 assign dcif.imemload = instr[iaddr.idx].data;
-assign icf.imemaddr =  dcif.imemaddr;
+assign icf.iaddr =  dcif.imemaddr;
 assign dcif.ihit = hit;
 
-icache_t instr [15:0];
-istate_t state, next_state;
+Icache_t instr [15:0];
+Istate_t state, next_state;
 
 always_ff @(posedge CLK, negedge nRST) begin
 	if(!nRST) begin
-		state <= IDLE;
+		state <= IDLE_I;
 		for (i = 0; i < 16; i++) begin
 			 instr[i].tag <= 0;
 			 instr[i].data <= 0;
@@ -68,7 +73,7 @@ always_comb begin
 		valid = instr[iaddr.idx].valid;
 	end else begin
 		casez (state) 
-		IDLE:
+		IDLE_I:
 		begin
 		tag = iaddr.tag;
 		data = icf.iload;
@@ -83,7 +88,7 @@ always_comb begin
 			data = instr[iaddr.idx].data;
 			valid = 1;	
 			if (!icf.iwait)
-				next_state = IDLE;
+				next_state = IDLE_I;
 		end
 		endcase
 	end
