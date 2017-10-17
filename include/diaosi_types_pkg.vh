@@ -43,5 +43,26 @@ package diaosi_types_pkg;
 	typedef enum logic {
 	DMEMADDR_OUT3_DIAOSI, LUI_OUT3_DIAOSI
 	} OUT3_t;
+
+	typedef enum logic {
+	IDLE, ld 
+	} dstate_t;
+
+	typedef enum logic {
+	IDLE, ld1, ld2, wb1, wb2, clean, flush1, flush2, hlt_cnt, halt, cnt
+	} istate_t;
+
+  	typedef struct packed {
+    	logic [25:0]  tag;
+    	logic		  valid;
+    	logic [31:0]  data;
+  	} icache_t;
+
+  	typedef struct packed {
+    	logic [25:0]  tag;
+    	logic 		  valid, dirty;    
+    	logic [31:0]  data1;
+    	logic [31:0]  data2;
+  	} dcache_t;
 endpackage
 `endif
