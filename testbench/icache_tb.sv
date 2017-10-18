@@ -53,14 +53,22 @@ import cpu_types_pkg::*;
   icache_tb.nRST = 1;
  	icache_tb.dcif.imemREN = 1'b1;
   #(PERIOD);
-//read 111110     imemload = 32'b10101010
-	icache_tb.dcif.imemaddr = 32'b111110;
-	icache_tb.cif.iwait = 1;
-
   #(PERIOD);
   @(negedge icache_tb.CLK);
   icache_tb.cif.iwait = 0;
+
+  @(posedge icache_tb.CLK);
+
+  icache_tb.cif.iwait = 1;
+  #(PERIOD);
+//read 111110     imemload = 32'b10101010
+	icache_tb.dcif.imemaddr = 32'b111110;
+	icache_tb.cif.iwait = 1;
   icache_tb.cif.iload = 32'b10101010;
+  #(PERIOD);
+  @(negedge icache_tb.CLK);
+  icache_tb.cif.iwait = 0;
+
   @(posedge icache_tb.CLK);
 
   icache_tb.cif.iwait = 1;
