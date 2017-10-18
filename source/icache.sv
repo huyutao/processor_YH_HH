@@ -18,7 +18,7 @@ import diaosi_types_pkg::*;
 
 logic 		hit;
 integer     i;
-
+logic       IDLE;
 
 
 icachef_t iaddr;
@@ -58,28 +58,30 @@ end
 always_comb begin
 	hit = 0;
 	if (frame[iaddr.idx].tag == iaddr.tag) begin
-		if (frame[iaddr.idx].valid) begin
+		if (frame[iaddr.idx].valid)  begin
 			hit = 1;
 		end 
 	end
 end // always_comb
 
 always_comb begin
+	IDLE = 1;
 	icf.iREN = 0;
 	if (dcif.imemREN == 0) begin
-		next_frame.tag	<= frame[iaddr.idx].tag;
-		next_frame.data   <= frame[iaddr.idx].data;
-		next_frame.valid  <= frame[iaddr.idx].valid;
+		next_frame.tag	= frame[iaddr.idx].tag;
+		next_frame.data   = frame[iaddr.idx].data;
+		next_frame.valid  = frame[iaddr.idx].valid;
 	end else begin
 		casez (state) 
 		IDLE_I:
 		begin
-
+		IDLE = 1;	
 		if (!hit)
 			next_state = LD;
 		end
 		LD:
 		begin
+			IDLE = 0;
 			icf.iREN = 1;
 			next_frame.tag = iaddr.tag;
 			next_frame.data = icf.iload;

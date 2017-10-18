@@ -56,14 +56,13 @@ import cpu_types_pkg::*;
 //read 111110     imemload = 32'b10101010
 	icache_tb.dcif.imemaddr = 32'b111110;
 	icache_tb.cif.iwait = 1;
-  icache_tb.cif.iload = 32'b10101010;
-  #(PERIOD);
-  icache_tb.cif.iwait = 0;
- 
-  #(PERIOD);
 
   #(PERIOD);
-  #(PERIOD);
+  @(negedge icache_tb.CLK);
+  icache_tb.cif.iwait = 0;
+  icache_tb.cif.iload = 32'b10101010;
+  @(posedge icache_tb.CLK);
+
   icache_tb.cif.iwait = 1;
   #(PERIOD);
 //read 1111111010  imemload = 32'b101010010
@@ -72,38 +71,28 @@ import cpu_types_pkg::*;
   icache_tb.cif.iload = 32'b101010010;
 
   #(PERIOD);
+  @(negedge icache_tb.CLK);
 	icache_tb.cif.iwait = 0;
 
-  #(PERIOD);
-  icache_tb.cif.iwait = 1;
-  #(PERIOD);
+  @(posedge icache_tb.CLK);
 
+  icache_tb.cif.iwait = 1;
   #(PERIOD);
 //read 111110  imemload = 32'b10101010
 	icache_tb.dcif.imemaddr = 32'b111110;
   #(PERIOD);
-  #(PERIOD);
-  #(PERIOD);
-  #(PERIOD);
+
 //read 1111110 change tag      imemload = 101010100
 	icache_tb.dcif.imemaddr = 32'b1111110;
   icache_tb.cif.iload = 32'b101010100;
 
   #(PERIOD);
+  @(negedge icache_tb.CLK);
   icache_tb.cif.iwait = 0;
 
-  #(PERIOD);
-  #(PERIOD);
+  @(posedge icache_tb.CLK);
   icache_tb.cif.iwait = 1;
     #(PERIOD);
-    #(PERIOD);
-    #(PERIOD);
-    #(PERIOD);
-    #(PERIOD);
-    #(PERIOD);
-    #(PERIOD);
-    #(PERIOD);
-    #(PERIOD);
-    #(PERIOD);
+
   end
  endprogram
