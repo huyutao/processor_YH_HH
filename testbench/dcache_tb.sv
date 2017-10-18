@@ -53,13 +53,13 @@ import cpu_types_pkg::*;
   dcache_tb.dcif.dmemREN = 0;
   dcache_tb.dcif.dmemaddr = 0;
   dcache_tb.cif.dwait = 1;
-  dcache_tb.cif.dload = 0;
+  dcache_tb.cif.dload = 2'b10;
   #(PERIOD);
   dcache_tb.nRST = 1;
   #(PERIOD);
 //read empty values  address tag 1 index 111 blockoffset 1
   dcache_tb.dcif.dmemREN = 1;
-  dcache_tb.dcif.dmemaddr = 32'b1111100;      //miss
+  dcache_tb.dcif.dmemaddr = 32'b1111100;      //miss     -1
   #(PERIOD);    
   dcache_tb.cif.dwait = 0;
   #(PERIOD); 
@@ -67,28 +67,29 @@ import cpu_types_pkg::*;
   #(PERIOD);    
   dcache_tb.cif.dwait = 0;
   #(PERIOD); 
-  dcache_tb.cif.dwait = 1;
+  dcache_tb.cif.dwait = 1;                    //          0 
+  #(PERIOD); 
   dcache_tb.dcif.dmemREN = 0;
 //write datas address  ld test  tag 1 index 111 block offset 1
   dcache_tb.dcif.dmemWEN = 1;
   dcache_tb.dcif.dmemaddr = 32'b1111100;
-  dcache_tb.dcif.dmemstore = 32'b11;          //hit = 1
+  dcache_tb.dcif.dmemstore = 32'b11;          //hit = 1    1
   #(PERIOD);
   dcache_tb.dcif.dmemaddr = 32'b1111100;
-  dcache_tb.dcif.dmemstore = 32'b111;        //hit = 2
+  dcache_tb.dcif.dmemstore = 32'b111;        //hit = 2     2
   #(PERIOD); 
   dcache_tb.dcif.dmemaddr = 32'b1111100;
-  dcache_tb.dcif.dmemstore = 32'b1111;       //hit = 3
+  dcache_tb.dcif.dmemstore = 32'b1111;       //hit = 3     3
   #(PERIOD); 
   dcache_tb.dcif.dmemWEN = 0;
-//read datas address before ans = 32'b1111
+//read datas address before ans = 32'b1111   //hit = 4     4
   dcache_tb.dcif.dmemREN = 1;
   #(PERIOD); 
   dcache_tb.dcif.dmemREN = 0;
 //write back test  tag 11 index111 blockoffset 1
   dcache_tb.dcif.dmemWEN = 1;
   dcache_tb.dcif.dmemaddr = 32'b11111100;
-  dcache_tb.dcif.dmemstore = 32'b110;        //miss
+  dcache_tb.dcif.dmemstore = 32'b110;        //miss       2
   #(PERIOD);    
   dcache_tb.cif.dwait = 0;
   #(PERIOD); 
@@ -96,7 +97,12 @@ import cpu_types_pkg::*;
   #(PERIOD);    
   dcache_tb.cif.dwait = 0;
   #(PERIOD); 
-  dcache_tb.cif.dwait = 1;  
+  dcache_tb.cif.dwait = 1;                  //            3
+  dcache_tb.dcif.dmemaddr = 32'b11111100;    //dirty   hit = 5
+  dcache_tb.dcif.dmemstore = 32'b1100; 
+  #(PERIOD); 
+  dcache_tb.dcif.dmemaddr = 32'b111111100;
+  dcache_tb.dcif.dmemstore = 32'b110;        //miss wb
   #(PERIOD);    
   dcache_tb.cif.dwait = 0;
   #(PERIOD); 
@@ -104,23 +110,39 @@ import cpu_types_pkg::*;
   #(PERIOD);    
   dcache_tb.cif.dwait = 0;
   #(PERIOD); 
-  dcache_tb.cif.dwait = 1; 
+  dcache_tb.cif.dwait = 1;
+  #(PERIOD);    
+  dcache_tb.cif.dwait = 0;
+  #(PERIOD); 
+  dcache_tb.cif.dwait = 1;
+  #(PERIOD);    
+  dcache_tb.cif.dwait = 0;
+  #(PERIOD); 
+  dcache_tb.cif.dwait = 1;   
   dcache_tb.dcif.dmemWEN = 0;  
 //read new data      ans = 3'b110
-  dcache_tb.dcif.dmemREN = 1;               //hit = 4
+  dcache_tb.dcif.dmemREN = 1;               //hit = 6
+  #(PERIOD); 
+  dcache_tb.cif.dload = 4'b1100;
+  dcache_tb.dcif.dmemaddr = 32'b1111100;    //MISS ans= 1100
+  #(PERIOD);    
+  dcache_tb.cif.dwait = 0;        
+  #(PERIOD); 
+  dcache_tb.cif.dwait = 1;
+  #(PERIOD);    
+  dcache_tb.cif.dwait = 0;
+  #(PERIOD); 
+  dcache_tb.cif.dwait = 1;
+  #(PERIOD);    
+  dcache_tb.cif.dwait = 0;        
+  #(PERIOD); 
+  dcache_tb.cif.dwait = 1;
+  #(PERIOD);    
+  dcache_tb.cif.dwait = 0;
+  #(PERIOD); 
+  dcache_tb.cif.dwait = 1;
   #(PERIOD); 
   dcache_tb.dcif.dmemREN = 0;
-//write more data  3'b110  tag 1 index 111 block offset 0
-  dcache_tb.dcif.dmemWEN = 1;              //miss 
-  #(PERIOD);    
-  dcache_tb.cif.dwait = 0;
-  #(PERIOD); 
-  dcache_tb.cif.dwait = 1;
-  #(PERIOD);    
-  dcache_tb.cif.dwait = 0;
-  #(PERIOD); 
-  dcache_tb.cif.dwait = 1;
-  dcache_tb.dcif.dmemWEN = 0;
 //halt
   dcache_tb.dcif.halt = 1;
   #(PERIOD);  
@@ -141,7 +163,6 @@ import cpu_types_pkg::*;
   #(PERIOD); 
   dcache_tb.cif.dwait = 1;   
   #(PERIOD);  
-  #(PERIOD);    
   dcache_tb.cif.dwait = 0;      //flush cnt
   #(PERIOD); 
   dcache_tb.cif.dwait = 1;

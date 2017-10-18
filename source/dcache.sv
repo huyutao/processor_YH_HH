@@ -14,13 +14,16 @@ module dcache (
 
 import cpu_types_pkg::*;
 import diaosi_types_pkg::*;
+logic hit;
 
+integer i;
 
 dcachef_t daddr;
 assign daddr.tag = dcif.dmemaddr[31:6];
 assign daddr.idx = dcif.dmemaddr[5:3];
 assign daddr.blkoff = dcif.dmemaddr[2];
 assign daddr.bytoff =  dcif.dmemaddr[1:0];
+assign dcif.dhit = hit;
 
 Dcache_t l_frame[7:0], r_frame[7:0],next_l_frame,next_r_frame;
 Dstate_t state,next_state;
@@ -28,10 +31,7 @@ logic lru[7:0], next_lru[7:0];
 logic [4:0] flush_i, next_flush_i;
 word_t hit_cnt, next_hit_cnt;
 
-logic w_en_table;
-logic hit;
 
-integer i;
 
 
 always_ff @(posedge CLK, negedge nRST) begin
@@ -56,8 +56,7 @@ always_ff @(posedge CLK, negedge nRST) begin
 		state <= next_state;
 		flush_i <= next_flush_i;
 		hit_cnt <= next_hit_cnt;
-		if (w_en_table) 
-		begin
+
 			r_frame[daddr.idx].valid <= next_r_frame.valid;
 			r_frame[daddr.idx].dirty <= next_r_frame.dirty;
 			r_frame[daddr.idx].tag <= next_r_frame.tag;
@@ -69,19 +68,7 @@ always_ff @(posedge CLK, negedge nRST) begin
 			l_frame[daddr.idx].data1 <= next_l_frame.data1;
 			l_frame[daddr.idx].data2 <= next_l_frame.data2;
 			lru[daddr.idx] <= next_lru[daddr.idx];
-		end else begin
-			l_frame[daddr.idx].valid <= l_frame[daddr.idx].valid;
-			l_frame[daddr.idx].dirty <= l_frame[daddr.idx].dirty;
-			l_frame[daddr.idx].tag <= l_frame[daddr.idx].tag;
-			l_frame[daddr.idx].data1 <= l_frame[daddr.idx].data1;
-			l_frame[daddr.idx].data2 <= l_frame[daddr.idx].data2;
-			r_frame[daddr.idx].valid <= r_frame[daddr.idx].valid;
-			r_frame[daddr.idx].dirty <= r_frame[daddr.idx].dirty;
-			r_frame[daddr.idx].tag <= r_frame[daddr.idx].tag;
-			r_frame[daddr.idx].data1 <= r_frame[daddr.idx].data1;
-			r_frame[daddr.idx].data2 <= r_frame[daddr.idx].data2;
-			lru[daddr.idx] <= lru[daddr.idx];
-		end		
+			
 	end
 end
 
@@ -90,7 +77,6 @@ end
 always_comb begin : NEXT_LOGIC
 	next_state = state;
 	next_flush_i = flush_i;
-
 	casez (state) 
 		IDLE_D:
 		begin
@@ -101,10 +87,13 @@ always_comb begin : NEXT_LOGIC
 					next_state = WB1;
 				else
 					next_state = LD1;
+				if ((!dcif.dmemREN) & (!dcif.dmemWEN))
+					next_state = IDLE_D;
 			end
 		end
 		LD1:
 		begin 
+
 			if (dcf.dwait == 0) next_state = LD2;
 		end
 		LD2: 
@@ -154,7 +143,6 @@ end
 integer j;
 always_comb begin : OUTPUT_LOGIC
 	hit = 0;
-	dcif.dhit = 0;
 	dcif.dmemload = 0;
 	dcf.dREN = 0;
 	dcf.dWEN = 0;
@@ -186,15 +174,15 @@ always_comb begin : OUTPUT_LOGIC
 			begin
 				if (daddr.tag==l_frame[daddr.idx].tag && l_frame[daddr.idx].valid)
 				begin
-					dcif.dhit = 1;
-					dcif.dmemload = daddr.blkoff?l_frame[daddr.idx].data1:l_frame[daddr.idx].data2; 
+					hit = 1;
+					dcif.dmemload = daddr.blkoff?l_frame[daddr.idx].data2:l_frame[daddr.idx].data1; 
 					next_hit_cnt = hit_cnt + 1;
 					next_lru[daddr.idx] = 1;
 				end
 				else if (daddr.tag==r_frame[daddr.idx].tag && r_frame[daddr.idx].valid)
 				begin
-					dcif.dhit = 1;
-					dcif.dmemload = daddr.blkoff?r_frame[daddr.idx].data1:r_frame[daddr.idx].data2; 
+					hit = 1;
+					dcif.dmemload = daddr.blkoff?r_frame[daddr.idx].data2:r_frame[daddr.idx].data1; 
 					next_hit_cnt = hit_cnt + 1;
 					next_lru[daddr.idx] = 0;
 				end
@@ -208,7 +196,7 @@ always_comb begin : OUTPUT_LOGIC
 			begin
 				if (daddr.tag==l_frame[daddr.idx].tag)
 				begin
-					dcif.dhit = 1;
+					hit = 1;
 					next_l_frame.dirty = 1;
 					next_hit_cnt = hit_cnt + 1;
 					next_lru[daddr.idx] = 1;
@@ -219,7 +207,7 @@ always_comb begin : OUTPUT_LOGIC
 				end
 				else if (daddr.tag==r_frame[daddr.idx].tag)
 				begin
-					dcif.dhit = 1;
+					hit = 1;
 					next_r_frame.dirty = 1;
 					next_hit_cnt = hit_cnt + 1;
 					next_lru[daddr.idx] = 0;
@@ -239,19 +227,31 @@ always_comb begin : OUTPUT_LOGIC
 		begin 
 			dcf.dREN = 1;
 			dcf.daddr = {daddr.tag,daddr.idx,3'b000};
-			if (lru[daddr.idx] == 0)
+			if (lru[daddr.idx] == 0) begin
 				next_l_frame.data1 = dcf.dload;
-			else
+				next_l_frame.tag   = daddr.tag;
+				next_l_frame.valid   = 1;
+			end
+			else begin
 				next_r_frame.data1 = dcf.dload;
+				next_r_frame.tag   = daddr.tag;
+				next_r_frame.valid   = 1;
+			end
 		end
 		LD2: 
 		begin 
 			dcf.dREN = 1;
 			dcf.daddr = {daddr.tag,daddr.idx,3'b100};
-			if (lru[daddr.idx] == 0)
+			if (lru[daddr.idx] == 0) begin
 				next_l_frame.data2 = dcf.dload;
-			else
+				next_l_frame.tag   = daddr.tag;
+				next_l_frame.valid = 1; 
+			end
+			else begin
 				next_r_frame.data2 = dcf.dload;
+				next_r_frame.tag   = daddr.tag;
+				next_r_frame.valid = 1;
+			end
 		end
 		WB1: 
 		begin 
