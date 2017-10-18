@@ -45,11 +45,15 @@ import cpu_types_pkg::*;
   initial begin
 
 	icache_tb.nRST = 0;
+  icache_tb.dcif.dmemREN = 0;
+  icache_tb.dcif.dmemWEN = 0;
 	icache_tb.dcif.imemREN = 0;
 	icache_tb.dcif.imemaddr = 0;
 	icache_tb.cif.iwait = 0;
 	icache_tb.cif.iload = 0;
   #(PERIOD);
+  icache_tb.dcif.dmemREN = 0;
+  icache_tb.dcif.dmemWEN = 0;
   icache_tb.nRST = 1;
  	icache_tb.dcif.imemREN = 1'b1;
   #(PERIOD);
@@ -101,6 +105,7 @@ import cpu_types_pkg::*;
   @(posedge icache_tb.CLK);
   icache_tb.cif.iwait = 1;
     #(PERIOD);
-
+    #(PERIOD);
+    #(PERIOD);
   end
  endprogram
