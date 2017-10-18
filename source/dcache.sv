@@ -14,7 +14,7 @@ module dcache (
 
 import cpu_types_pkg::*;
 import diaosi_types_pkg::*;
-logic hit;
+logic hit, miss;
 
 integer i;
 
@@ -56,18 +56,17 @@ always_ff @(posedge CLK, negedge nRST) begin
 		state <= next_state;
 		flush_i <= next_flush_i;
 		hit_cnt <= next_hit_cnt;
-
-			r_frame[daddr.idx].valid <= next_r_frame.valid;
-			r_frame[daddr.idx].dirty <= next_r_frame.dirty;
-			r_frame[daddr.idx].tag <= next_r_frame.tag;
-			r_frame[daddr.idx].data1 <= next_r_frame.data1;
-			r_frame[daddr.idx].data2 <= next_r_frame.data2;
-			l_frame[daddr.idx].valid <= next_l_frame.valid;
-			l_frame[daddr.idx].dirty <= next_l_frame.dirty;
-			l_frame[daddr.idx].tag <= next_l_frame.tag;
-			l_frame[daddr.idx].data1 <= next_l_frame.data1;
-			l_frame[daddr.idx].data2 <= next_l_frame.data2;
-			lru[daddr.idx] <= next_lru[daddr.idx];
+		r_frame[daddr.idx].valid <= next_r_frame.valid;
+		r_frame[daddr.idx].dirty <= next_r_frame.dirty;
+		r_frame[daddr.idx].tag <= next_r_frame.tag;
+		r_frame[daddr.idx].data1 <= next_r_frame.data1;
+		r_frame[daddr.idx].data2 <= next_r_frame.data2;
+		l_frame[daddr.idx].valid <= next_l_frame.valid;
+		l_frame[daddr.idx].dirty <= next_l_frame.dirty;
+		l_frame[daddr.idx].tag <= next_l_frame.tag;
+		l_frame[daddr.idx].data1 <= next_l_frame.data1;
+		l_frame[daddr.idx].data2 <= next_l_frame.data2;
+		lru[daddr.idx] <= next_lru[daddr.idx];
 			
 	end
 end
@@ -81,7 +80,7 @@ always_comb begin : NEXT_LOGIC
 		IDLE_D:
 		begin
 			if (dcif.halt) next_state = CLEAN;
-			if (hit == 0)
+			if (miss == 1)
 			begin
 				if((lru[daddr.idx] && r_frame[daddr.idx].dirty) || (!lru[daddr.idx] && l_frame[daddr.idx].dirty))
 					next_state = WB1;
@@ -143,6 +142,7 @@ end
 integer j;
 always_comb begin : OUTPUT_LOGIC
 	hit = 0;
+	miss = 0;
 	dcif.dmemload = 0;
 	dcf.dREN = 0;
 	dcf.dWEN = 0;
@@ -188,6 +188,7 @@ always_comb begin : OUTPUT_LOGIC
 				end
 				else
 				begin
+					miss = 1;
 					hit = 0;
 					next_hit_cnt = hit_cnt - 1;
 				end
@@ -218,6 +219,7 @@ always_comb begin : OUTPUT_LOGIC
 				end
 				else
 				begin
+					miss = 1;
 					hit = 0;
 					next_hit_cnt = hit_cnt - 1;
 				end
