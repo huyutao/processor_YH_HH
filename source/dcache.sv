@@ -149,6 +149,7 @@ always_comb begin : OUTPUT_LOGIC
 	dcf.dWEN = 0;
 	dcf.daddr = 0;
 	dcf.dstore = 0;
+	dcif.flushed = 0;
 
 	next_l_frame.valid = l_frame[daddr.idx].valid;
 	next_l_frame.dirty = l_frame[daddr.idx].dirty;
@@ -308,7 +309,10 @@ always_comb begin : OUTPUT_LOGIC
 			dcf.daddr = 32'h00003100;
 			dcf.dstore = hit_cnt;
 		end
-		//HALT:
+		HALT:
+		begin
+			dcif.flushed = 1;
+		end
 	endcase
 
 end

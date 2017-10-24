@@ -30,6 +30,28 @@ module caches (
   dcache  DCACHE(dcif, cif, CLK, nRST);
 
 
+
+    // dcache invalidate before halt
+    /*
+  assign dcif.flushed = dcif.halt;
+
+  //single cycle
+  assign dcif.ihit = (dcif.imemREN) ? ~cif.iwait : 0;
+  assign dcif.dhit = (dcif.dmemREN|dcif.dmemWEN) ? ~cif.dwait : 0;
+  assign dcif.imemload = cif.iload;
+  assign dcif.dmemload = cif.dload;
+
+
+  assign cif.iREN = dcif.imemREN;
+  assign cif.dREN = dcif.dmemREN;
+  assign cif.dWEN = dcif.dmemWEN;
+  assign cif.dstore = dcif.dmemstore;
+  assign cif.iaddr = dcif.imemaddr;
+  assign cif.daddr = dcif.dmemaddr;
+  */
+
+
+
 endmodule
   // single cycle instr saver (for memory ops)
 
