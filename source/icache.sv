@@ -8,9 +8,10 @@
 
 
 module icache (
-	input logic CLK, nRST,
+
 	datapath_cache_if dcif,
-	caches_if.icache icf
+	caches_if.icache icf,
+	input logic CLK, nRST
 );
 
 import cpu_types_pkg::*;
@@ -64,11 +65,11 @@ always_comb begin
 	next_frame.data   = frame[iaddr.idx].data;
 	next_frame.valid  = frame[iaddr.idx].valid;
 	icf.iREN = 0;
-	if ((dcif.imemREN != 0) & !(dcif.dmemREN || dcif.dmemWEN)) begin
+	if (dcif.imemREN != 0) begin
 		casez (state) 
 		IDLE_I:
 		begin	
-		if (!hit)
+		if ((!hit) & !(dcif.dmemREN || dcif.dmemWEN))
 			next_state = LD;
 		end
 		LD:
