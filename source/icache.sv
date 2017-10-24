@@ -53,7 +53,7 @@ always_comb begin
 	next_frame.data   = frame[iaddr.idx].data;
 	next_frame.valid  = frame[iaddr.idx].valid;
 	icf.iREN = 0;
-	if (dcif.imemREN != 0) begin
+	if (dcif.imemREN == 1 && dcif.halt == 0) begin
 		casez (state) 
 		IDLE_I:
 		begin	
