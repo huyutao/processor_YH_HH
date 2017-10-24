@@ -121,6 +121,8 @@ always_comb begin : NEXT_LOGIC
 					if (l_frame[flush_i].dirty || r_frame[flush_i].dirty) next_state = FLUSH1;
 					next_flush_i = flush_i + 1;        // if no flush or only one flash needed
 				end
+			end else begin
+				next_state = HLT_CNT;
 			end
 		end
 		FLUSH1: 
@@ -135,7 +137,6 @@ always_comb begin : NEXT_LOGIC
 		begin
 			if (dcf.dwait == 0) next_state = HALT_D;
 		end
-		//HALT_D:
 	endcase
 end
 
@@ -309,7 +310,7 @@ always_comb begin : OUTPUT_LOGIC
 			dcf.daddr = 32'h00003100;
 			dcf.dstore = hit_cnt;
 		end
-		HALT:
+		HALT_D:
 		begin
 			dcif.flushed = 1;
 		end
