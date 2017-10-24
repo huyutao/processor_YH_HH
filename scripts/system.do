@@ -37,18 +37,23 @@ add wave -noupdate -group cif0 /system_tb/DUT/CPU/cif0/ccinv
 add wave -noupdate -group cif0 /system_tb/DUT/CPU/cif0/ccwrite
 add wave -noupdate -group cif0 /system_tb/DUT/CPU/cif0/cctrans
 add wave -noupdate -group cif0 /system_tb/DUT/CPU/cif0/ccsnoopaddr
-add wave -noupdate -expand -group pc /system_tb/DUT/CPU/DP/pcif/PC
-add wave -noupdate -expand -group pc /system_tb/DUT/CPU/DP/pcif/pc3
-add wave -noupdate -expand -group pc /system_tb/DUT/CPU/DP/pcif/pc_en
-add wave -noupdate -expand -group pc /system_tb/DUT/CPU/DP/stif/PCSrc_o2
-add wave -noupdate -expand -group pc /system_tb/DUT/CPU/DP/pcif/npc
-add wave -noupdate -expand -group pc /system_tb/DUT/CPU/DP/stif/branch_addr_i3
-add wave -noupdate -expand -group pc /system_tb/DUT/CPU/DP/stif/jump_addr_i3
-add wave -noupdate -expand -group pc /system_tb/DUT/CPU/DP/stif/jr_addr_i3
-add wave -noupdate -group icache /system_tb/DUT/CPU/dcif/ihit
-add wave -noupdate -group icache /system_tb/DUT/CPU/dcif/imemREN
-add wave -noupdate -group icache /system_tb/DUT/CPU/dcif/imemload
-add wave -noupdate -group icache /system_tb/DUT/CPU/dcif/imemaddr
+add wave -noupdate -group pc /system_tb/DUT/CPU/DP/pcif/PC
+add wave -noupdate -group pc /system_tb/DUT/CPU/DP/pcif/pc3
+add wave -noupdate -group pc /system_tb/DUT/CPU/DP/pcif/pc_en
+add wave -noupdate -group pc /system_tb/DUT/CPU/DP/stif/PCSrc_o2
+add wave -noupdate -group pc /system_tb/DUT/CPU/DP/pcif/npc
+add wave -noupdate -group pc /system_tb/DUT/CPU/DP/stif/branch_addr_i3
+add wave -noupdate -group pc /system_tb/DUT/CPU/DP/stif/jump_addr_i3
+add wave -noupdate -group pc /system_tb/DUT/CPU/DP/stif/jr_addr_i3
+add wave -noupdate -expand -group icache /system_tb/DUT/CPU/dcif/ihit
+add wave -noupdate -expand -group icache /system_tb/DUT/CPU/dcif/imemREN
+add wave -noupdate -expand -group icache /system_tb/DUT/CPU/dcif/imemload
+add wave -noupdate -expand -group icache /system_tb/DUT/CPU/dcif/imemaddr
+add wave -noupdate -expand -group icache /system_tb/DUT/CPU/CM/ICACHE/iaddr
+add wave -noupdate -expand -group icache /system_tb/DUT/CPU/CM/ICACHE/frame
+add wave -noupdate -expand -group icache /system_tb/DUT/CPU/CM/ICACHE/next_frame
+add wave -noupdate -expand -group icache /system_tb/DUT/CPU/CM/ICACHE/state
+add wave -noupdate /system_tb/DUT/CPU/CM/ICACHE/next_state
 add wave -noupdate -group i1 /system_tb/DUT/CPU/DP/stif/npc_i1
 add wave -noupdate -group i1 /system_tb/DUT/CPU/DP/stif/imemload_i1
 add wave -noupdate -group o1 /system_tb/DUT/CPU/DP/stif/npc_o1
@@ -212,7 +217,7 @@ add wave -noupdate -group {rfif wb} /system_tb/DUT/CPU/DP/rfif/wsel
 add wave -noupdate -group {rfif wb} /system_tb/DUT/CPU/DP/rfif/wdat
 add wave -noupdate -expand /system_tb/DUT/CPU/DP/RF/data
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {645464 ps} 0}
+WaveRestoreCursors {{Cursor 1} {191905 ps} 0}
 quietly wave cursor active 1
 configure wave -namecolwidth 172
 configure wave -valuecolwidth 100
@@ -228,4 +233,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits ns
 update
-WaveRestoreZoom {430776 ps} {1507721 ps}
+WaveRestoreZoom {0 ps} {1076945 ps}

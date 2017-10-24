@@ -69,7 +69,7 @@ module datapath (
   end
   assign pcif.pc_en = dcif.ihit & huif.pc_en;
   //icache control
-  assign dcif.imemREN      = 1'b1;
+  assign dcif.imemREN      = ~(dcif.dmemREN & dcif.dmemWEN);
   assign dcif.imemaddr     = pcif.PC; 
   //if_dc 
   assign stif.npc_i1       = pcif.npc;

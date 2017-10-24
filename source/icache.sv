@@ -17,9 +17,7 @@ module icache (
 import cpu_types_pkg::*;
 import diaosi_types_pkg::*;
 
-logic 		hit;
 integer     i;
-
 
 icachef_t iaddr;
 assign iaddr.tag = dcif.imemaddr[31:6];
@@ -27,7 +25,6 @@ assign iaddr.idx = dcif.imemaddr[5:2];
 assign iaddr.bytoff = dcif.imemaddr[1:0];
 assign dcif.imemload = frame[iaddr.idx].data;
 assign icf.iaddr =  dcif.imemaddr;
-assign dcif.ihit = hit;
 
 Icache_t frame [15:0];
 Icache_t next_frame;
@@ -43,7 +40,6 @@ always_ff @(posedge CLK, negedge nRST) begin
 		end
 	end else begin
 		state <= next_state;
-
 		frame[iaddr.idx].tag 	<= next_frame.tag;
 		frame[iaddr.idx].data   <= next_frame.data;
 		frame[iaddr.idx].valid  <= next_frame.valid;
@@ -52,15 +48,7 @@ always_ff @(posedge CLK, negedge nRST) begin
 end
 
 always_comb begin
-	hit = 0;
-	if (frame[iaddr.idx].tag == iaddr.tag) begin
-		if (frame[iaddr.idx].valid)  begin
-			hit = 1;
-		end 
-	end
-end // always_comb
-
-always_comb begin
+	dcif.ihit = 0;
 	next_frame.tag	= frame[iaddr.idx].tag;
 	next_frame.data   = frame[iaddr.idx].data;
 	next_frame.valid  = frame[iaddr.idx].valid;
@@ -69,8 +57,10 @@ always_comb begin
 		casez (state) 
 		IDLE_I:
 		begin	
-		if ((!hit) & !(dcif.dmemREN || dcif.dmemWEN))
-			next_state = LD;
+			if (!(frame[iaddr.idx].tag == iaddr.tag && frame[iaddr.idx].valid))
+				next_state = LD;
+			else
+				dcif.ihit = 1;
 		end
 		LD:
 		begin
