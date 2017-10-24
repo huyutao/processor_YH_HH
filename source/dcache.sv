@@ -31,7 +31,7 @@ Dstate_t state,next_state;
 logic lru[7:0], next_lru[7:0];
 logic [4:0] flush_i, next_flush_i;
 word_t hit_cnt, next_hit_cnt;
-
+logic clean_l_dirty, clean_r_dirty;
 
 
 
@@ -53,6 +53,10 @@ always_ff @(posedge CLK, negedge nRST) begin
 			 r_frame[i].data2 <= 0;
 			 lru[i] <= 0;
 		end
+	end else if (state == FLUSH2) begin
+		state <= next_state;
+		l_frame[flush_i].dirty <= clean_l_dirty;
+		r_frame[flush_i].dirty <= clean_r_dirty;
 	end else begin
 		state <= next_state;
 		flush_i <= next_flush_i;
@@ -77,6 +81,8 @@ end
 always_comb begin : NEXT_LOGIC
 	next_state = state;
 	next_flush_i = flush_i;
+	clean_l_dirty = 0;
+	clean_r_dirty = 0;
 	casez (state) 
 		IDLE_D:
 		begin
@@ -112,14 +118,13 @@ always_comb begin : NEXT_LOGIC
 		begin
 			if (flush_i < 8)
 			begin 
-				if (l_frame[flush_i].dirty && r_frame[flush_i].dirty)
+				if (l_frame[flush_i].dirty || r_frame[flush_i].dirty)
 				begin
 					next_state = FLUSH1;
 				end
 				else 
 				begin
-					if (l_frame[flush_i].dirty || r_frame[flush_i].dirty) next_state = FLUSH1;
-					next_flush_i = flush_i + 1;        // if no flush or only one flash needed
+					next_flush_i = flush_i + 1; 
 				end
 			end else begin
 				next_state = HLT_CNT;
@@ -131,7 +136,21 @@ always_comb begin : NEXT_LOGIC
 		end
 		FLUSH2:  
 		begin
-			if (dcf.dwait == 0) next_state = CLEAN;
+			clean_r_dirty = r_frame[flush_i].dirty;
+			clean_l_dirty = l_frame[flush_i].dirty;
+
+			if (dcf.dwait == 0)
+			begin
+				next_state = CLEAN;
+				if (l_frame[flush_i].dirty)
+				begin
+					clean_l_dirty = 0;
+				end
+				else if (r_frame[flush_i].dirty)
+				begin
+					clean_r_dirty = 0;
+				end
+			end
 		end
 		HLT_CNT: 
 		begin
@@ -282,12 +301,12 @@ always_comb begin : OUTPUT_LOGIC
 			if (l_frame[flush_i].dirty)
 			begin
 				dcf.daddr = {l_frame[flush_i].tag,flush_i[2:0],3'b000};
-				dcf.dstore = l_frame[daddr.idx].data1;
+				dcf.dstore = l_frame[flush_i].data1;
 			end
 			else if (r_frame[flush_i].dirty)
 			begin
 				dcf.daddr = {r_frame[flush_i].tag,flush_i[2:0],3'b000};
-				dcf.dstore = r_frame[daddr.idx].data1;
+				dcf.dstore = r_frame[flush_i].data1;
 			end
 		end
 		FLUSH2:  
@@ -296,12 +315,12 @@ always_comb begin : OUTPUT_LOGIC
 			if (l_frame[flush_i].dirty)
 			begin
 				dcf.daddr = {l_frame[flush_i].tag,flush_i[2:0],3'b100};
-				dcf.dstore = l_frame[daddr.idx].data2;
+				dcf.dstore = l_frame[flush_i].data2;
 			end
 			else if (r_frame[flush_i].dirty)
 			begin
 				dcf.daddr = {r_frame[flush_i].tag,flush_i[2:0],3'b100};
-				dcf.dstore = r_frame[daddr.idx].data2;
+				dcf.dstore = r_frame[flush_i].data2;
 			end
 		end
 		HLT_CNT: 
