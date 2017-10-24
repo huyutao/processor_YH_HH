@@ -246,6 +246,8 @@ always_comb begin : OUTPUT_LOGIC
 					next_hit_cnt = hit_cnt - 1;
 				end
 			end
+			if (dcif.halt)
+				next_hit_cnt = hit_cnt;
 		end
 		LD1:
 		begin 
@@ -280,20 +282,30 @@ always_comb begin : OUTPUT_LOGIC
 		WB1: 
 		begin 
 			dcf.dWEN = 1;
-			dcf.daddr = {daddr.tag,daddr.idx,3'b000};
 			if (lru[daddr.idx] == 0)
+			begin
 				dcf.dstore = l_frame[daddr.idx].data1;
+				dcf.daddr = {l_frame[daddr.idx].tag,daddr.idx,3'b000};
+			end
 			else
+			begin
 				dcf.dstore = r_frame[daddr.idx].data1;
+				dcf.daddr = {r_frame[daddr.idx].tag,daddr.idx,3'b000};
+			end
 		end
 		WB2: 
 		begin 
 			dcf.dWEN = 1;
-			dcf.daddr = {daddr.tag,daddr.idx,3'b100};
 			if (lru[daddr.idx] == 0)
+			begin
 				dcf.dstore = l_frame[daddr.idx].data2;
+				dcf.daddr = {l_frame[daddr.idx].tag,daddr.idx,3'b100};
+			end
 			else
+			begin
 				dcf.dstore = r_frame[daddr.idx].data2;
+				dcf.daddr = {r_frame[daddr.idx].tag,daddr.idx,3'b100};
+			end
 		end
 		FLUSH1: 
 		begin
