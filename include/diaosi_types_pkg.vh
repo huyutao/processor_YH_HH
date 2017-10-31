@@ -64,5 +64,11 @@ package diaosi_types_pkg;
     	logic [31:0]  data1;
     	logic [31:0]  data2;
   	} Dcache_t;
+
+  	typedef enum logic [3:0] {
+	IDLE_B_DIAOSI, SNOOPING1_DIAOSI, C1MEM1_DIAOSI, C1MEM2_DIAOSI, C1CACHE1_DIAOSI, C1CACHE2_DIAOSI, SNOOPING2_DIAOSI, C2MEM1_DIAOSI, C2MEM2_DIAOSI, C2CACHE1_DIAOSI, C2CACHE2_DIAOSI
+	} Bus_control_state_t;
+
+
 endpackage
 `endif
