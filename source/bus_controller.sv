@@ -145,7 +145,6 @@ always_comb begin : NEXT_LOGIC
 				next_state = C2LD2_DIAOSI;
 			end
 		end
-		end
 		C2LD2_DIAOSI: 
 		begin
 			if (ccif.ramstate == ACCESS)
@@ -159,7 +158,6 @@ always_comb begin : NEXT_LOGIC
 			begin
 				next_state = C2CACHE2_DIAOSI;
 			end
-		end
 		end
 		C2CACHE2_DIAOSI: 
 		begin
