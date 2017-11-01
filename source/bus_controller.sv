@@ -32,7 +32,7 @@ Bus_control_state_t state, next_state;
 
 always_ff @(posedge CLK, negedge nRST) begin
 	if(!nRST) begin
-		state <= IDLE_D;
+		state <= IDLE_B_DIAOSI;
 	end else begin
 		state <= next_state;
 	end
@@ -241,14 +241,14 @@ always_comb begin : OUTPUT_LOGIC
 				ccif.ramREN = 1;
 				ccif.ramaddr = ccif.iaddr[0];
 				ccif.iwait[0] = (ccif.ramstate != ACCESS);
-				ccif.iload[0] = ramload;
+				ccif.iload[0] = ccif.ramload;
 			end
 			else if (ccif.iREN[1])
 			begin
 				ccif.ramREN = 1;
 				ccif.ramaddr = ccif.iaddr[1];
 				ccif.iwait[1] = (ccif.ramstate != ACCESS);
-				ccif.iload[1] = ramload;
+				ccif.iload[1] = ccif.ramload;
 			end
 		end
 		SNOOPING1_DIAOSI:
@@ -278,7 +278,7 @@ always_comb begin : OUTPUT_LOGIC
 			ccif.ramWEN = 1;
 			ccif.ramstore = ccif.dstore[1];
 			ccif.dwait[1] = (ccif.ramstate != ACCESS);
-			ccif.dload[0] = dstore[1];
+			ccif.dload[0] = ccif.dstore[1];
 			ccif.dwait[0] = (ccif.ramstate != ACCESS);
 		end
 		C1CACHE2_DIAOSI: 
@@ -287,7 +287,7 @@ always_comb begin : OUTPUT_LOGIC
 			ccif.ramWEN = 1;
 			ccif.ramstore = ccif.dstore[1];
 			ccif.dwait[1] = (ccif.ramstate != ACCESS);
-			ccif.dload[0] = dstore[1];
+			ccif.dload[0] = ccif.dstore[1];
 			ccif.dwait[0] = (ccif.ramstate != ACCESS);
 		end
 		SNOOPING2_DIAOSI: 
@@ -317,7 +317,7 @@ always_comb begin : OUTPUT_LOGIC
 			ccif.ramWEN = 1;
 			ccif.ramstore = ccif.dstore[0];
 			ccif.dwait[0] = (ccif.ramstate != ACCESS);
-			ccif.dload[1] = dstore[0];
+			ccif.dload[1] = ccif.dstore[0];
 			ccif.dwait[1] = (ccif.ramstate != ACCESS);
 		end
 		C2CACHE2_DIAOSI: 
@@ -326,7 +326,7 @@ always_comb begin : OUTPUT_LOGIC
 			ccif.ramWEN = 1;
 			ccif.ramstore = ccif.dstore[0];
 			ccif.dwait[0] = (ccif.ramstate != ACCESS);
-			ccif.dload[1] = dstore[0];
+			ccif.dload[1] = ccif.dstore[0];
 			ccif.dwait[1] = (ccif.ramstate != ACCESS);
 		end
 	endcase
