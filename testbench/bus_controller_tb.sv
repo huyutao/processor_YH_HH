@@ -26,7 +26,7 @@ module bus_controller_tb;
   ram ram(CLK,nRST,ramif);
   cache_control_if #(.CPUS(2)) ccif (cif0, cif1);
 // test program setup
-  test PROG (CLK,nRST,ccif);
+  test PROG();
 
   assign ramif.ramstore = ccif.ramstore; 
   assign ramif.ramWEN = ccif.ramWEN; 
@@ -91,17 +91,17 @@ program test;
    	bus_controller_tb.cif1.ccwrite = 0;
    	bus_controller_tb.cif1.cctrans = 0;
     @(posedge bus_controller_tb.CLK);
-    nRST = 1;
+    bus_controller_tb.nRST = 1;
     #(PERIOD)
     @(posedge bus_controller_tb.CLK);          //CIF0 INVALID LOCALR  PUT READ ON BUS; CIF1 INVALID SNOOPR 
-    bus_controller_tb.cif0.cctrans = 1
+    bus_controller_tb.cif0.cctrans = 1;
    	bus_controller_tb.cif0.dREN = 1;
    	bus_controller_tb.cif0.daddr = 32'b1111100; //tag:1 index:111 block:1
     @(posedge bus_controller_tb.CLK);        
-    bus_controller_tb.cif1.cctrans = 1
+    bus_controller_tb.cif1.cctrans = 1;
     @(posedge bus_controller_tb.CLK);
-    bus_controller_tb.cif1.cctrans = 0
-    bus_controller_tb.cif0.cctrans = 0
+    bus_controller_tb.cif1.cctrans = 0;
+    bus_controller_tb.cif0.cctrans = 0;
 /*
     #(PERIOD)                                   //CIF0 Shared SNOOPW;  CIF1 INVALID LOCALW  PUT  W ON BUS
     bus_controller_tb.cif1.cctrans = 1;
@@ -186,7 +186,7 @@ task automatic dump_memory();
 
       dcif.imemaddr = i << 2;
       dcif.imemREN = 1;
-      repeat (4) @(posedge CLK);
+      repeat (4) @(posedge bus_controller_tb.CLK);
       if (dcif.imemload === 0)
         continue;
       values = {8'h04,16'(i),8'h00,dcif.imemload};
