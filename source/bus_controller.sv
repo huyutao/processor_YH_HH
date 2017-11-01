@@ -84,7 +84,11 @@ always_comb begin : NEXT_LOGIC
 		end
 		SNOOPING1_DIAOSI:
 		begin 
-			if (ccif.cctrans[1])
+			if (ccif.dREN[0] == 0)
+			begin
+				next_state = IDLE_B_DIAOSI;
+			end
+			else if (ccif.cctrans[1])
 			begin 
 				if (ccif.ccwrite[1])
 				begin 
@@ -126,7 +130,11 @@ always_comb begin : NEXT_LOGIC
 		end
 		SNOOPING2_DIAOSI: 
 		begin
-			if (ccif.cctrans[0])
+			if (ccif.dREN[0] == 0)
+			begin
+				next_state = IDLE_B_DIAOSI;
+			end
+			else if (ccif.cctrans[0])
 			begin 
 				if (ccif.ccwrite[0])
 				begin 

@@ -19,11 +19,15 @@ logic hit, miss;
 
 integer i;
 
-dcachef_t daddr;
+dcachef_t daddr, snoop_addr;
 assign daddr.tag = dcif.dmemaddr[31:6];
 assign daddr.idx = dcif.dmemaddr[5:3];
 assign daddr.blkoff = dcif.dmemaddr[2];
 assign daddr.bytoff =  dcif.dmemaddr[1:0];
+assign snoop_addr.tag = dcf.ccsnoopaddr[31:6];
+assign snoop_addr.idx = dcf.ccsnoopaddr[5:3];
+assign snoop_addr.blkoff = dcf.ccsnoopaddr[2];
+assign snoop_addr.bytoff = dcf.ccsnoopaddr[1:0];
 assign dcif.dhit = hit;
 
 Dcache_t l_frame[7:0], r_frame[7:0],next_l_frame,next_r_frame;
@@ -31,7 +35,7 @@ Dstate_t state,next_state;
 logic lru[7:0], next_lru[7:0];
 logic [4:0] flush_i, next_flush_i;
 word_t hit_cnt, next_hit_cnt;
-logic clean_l_dirty, clean_r_dirty;
+logic clean_l_dirty, clean_r_dirty, next_l_valid, next_r_valid;
 
 
 
@@ -57,6 +61,23 @@ always_ff @(posedge CLK, negedge nRST) begin
 		state <= next_state;
 		l_frame[flush_i].dirty <= clean_l_dirty;
 		r_frame[flush_i].dirty <= clean_r_dirty;
+	end else if (state == SNOOP_DIAOSI) begin
+		state <= next_state;
+		l_frame[snoop_addr.idx].valid <= next_l_valid;
+		r_frame[snoop_addr.idx].valid <= next_r_valid;
+	end else if (state == CCWB2) begin
+		state <= next_state;
+		r_frame[snoop_addr.idx].valid <= next_r_frame.valid;
+		r_frame[snoop_addr.idx].dirty <= next_r_frame.dirty;
+		r_frame[snoop_addr.idx].tag <= next_r_frame.tag;
+		r_frame[snoop_addr.idx].data1 <= next_r_frame.data1;
+		r_frame[snoop_addr.idx].data2 <= next_r_frame.data2;
+		l_frame[snoop_addr.idx].valid <= next_l_frame.valid;
+		l_frame[snoop_addr.idx].dirty <= next_l_frame.dirty;
+		l_frame[snoop_addr.idx].tag <= next_l_frame.tag;
+		l_frame[snoop_addr.idx].data1 <= next_l_frame.data1;
+		l_frame[snoop_addr.idx].data2 <= next_l_frame.data2;
+		lru[snoop_addr.idx] <= next_lru[snoop_addr.idx];
 	end else begin
 		state <= next_state;
 		flush_i <= next_flush_i;
@@ -72,7 +93,6 @@ always_ff @(posedge CLK, negedge nRST) begin
 		l_frame[daddr.idx].data1 <= next_l_frame.data1;
 		l_frame[daddr.idx].data2 <= next_l_frame.data2;
 		lru[daddr.idx] <= next_lru[daddr.idx];
-			
 	end
 end
 
@@ -86,6 +106,10 @@ always_comb begin : NEXT_LOGIC
 	casez (state) 
 		IDLE_D:
 		begin
+			if (dcf.ccwait)
+			begin
+				next_state = SNOOP_DIAOSI;
+			end
 			if (dcif.halt) next_state = CLEAN;
 			if (miss == 1)
 			begin
@@ -97,9 +121,36 @@ always_comb begin : NEXT_LOGIC
 					next_state = IDLE_D;
 			end
 		end
+		SNOOP_DIAOSI:
+		begin
+			next_state = IDLE_D;
+			if (snoop_addr.tag==l_frame[snoop_addr.idx].tag && l_frame[snoop_addr.idx].valid)
+			begin
+				next_l_valid = ~dcf.ccinv;
+				if (l_frame[snoop_addr.idx].dirty)
+				begin
+					next_state = CCWB1;
+				end
+			end
+			else if (snoop_addr.tag==r_frame[snoop_addr.idx].tag && r_frame[snoop_addr.idx].valid)
+			begin
+				next_r_valid = ~dcf.ccinv;
+				if (r_frame[snoop_addr.idx].dirty)
+				begin
+					next_state = CCWB1;
+				end
+			end
+		end
+		CCWB1:
+		begin
+			if (dcf.dwait == 0) next_state = CCWB2;
+		end
+		CCWB2:
+		begin
+			if (dcf.dwait == 0) next_state = IDLE_D;
+		end
 		LD1:
 		begin 
-
 			if (dcf.dwait == 0) next_state = LD2;
 		end
 		LD2: 
@@ -170,6 +221,8 @@ always_comb begin : OUTPUT_LOGIC
 	dcf.daddr = 0;
 	dcf.dstore = 0;
 	dcif.flushed = 0;
+	dcf.cctrans = 0;
+	dcf.ccwrite = 0;
 
 	next_l_frame.valid = l_frame[daddr.idx].valid;
 	next_l_frame.dirty = l_frame[daddr.idx].dirty;
@@ -227,6 +280,13 @@ always_comb begin : OUTPUT_LOGIC
 						next_l_frame.data2 = dcif.dmemstore;
 					else
 						next_l_frame.data1 = dcif.dmemstore;
+					if(l_frame[daddr.idx].dirty == 0)
+					begin
+						dcf.cctrans = 1;
+						dcf.ccwrite = 1;
+						dcf.daddr = dcif.dmemaddr;
+					end
+
 				end
 				else if (daddr.tag==r_frame[daddr.idx].tag)
 				begin
@@ -238,6 +298,12 @@ always_comb begin : OUTPUT_LOGIC
 						next_r_frame.data2 = dcif.dmemstore;
 					else
 						next_r_frame.data1 = dcif.dmemstore;
+					if(r_frame[daddr.idx].dirty == 0)
+					begin
+						dcf.cctrans = 1;
+						dcf.ccwrite = 1;
+						dcf.daddr = dcif.dmemaddr;
+					end
 				end
 				else
 				begin
@@ -249,8 +315,75 @@ always_comb begin : OUTPUT_LOGIC
 			if (dcif.halt)
 				next_hit_cnt = hit_cnt;
 		end
+		SNOOP_DIAOSI:
+		begin 
+			dcf.cctrans = 1;
+			if (snoop_addr.tag==l_frame[snoop_addr.idx].tag && l_frame[snoop_addr.idx].valid && l_frame[snoop_addr.idx].dirty)
+			begin
+				dcf.ccwrite = 1;
+			end
+			else if (snoop_addr.tag==r_frame[snoop_addr.idx].tag && r_frame[snoop_addr.idx].valid && r_frame[snoop_addr.idx].dirty)
+			begin
+				dcf.ccwrite = 1;
+			end
+		end
+		CCWB1:
+		begin
+			dcf.dWEN = 1;
+			if (snoop_addr.tag==l_frame[snoop_addr.idx].tag)
+			begin
+				dcf.dstore = l_frame[snoop_addr.idx].data1;
+				dcf.daddr = {l_frame[snoop_addr.idx].tag,snoop_addr.idx,3'b000};
+			end
+			else
+			begin
+				dcf.dstore = r_frame[snoop_addr.idx].data1;
+				dcf.daddr = {r_frame[snoop_addr.idx].tag,snoop_addr.idx,3'b000};
+			end
+		end
+		CCWB2:
+		begin
+			dcf.dWEN = 1;
+			if (snoop_addr.tag==l_frame[snoop_addr.idx].tag)
+			begin
+				dcf.dstore = l_frame[snoop_addr.idx].data1;
+				dcf.daddr = {l_frame[snoop_addr.idx].tag,snoop_addr.idx,3'b100};
+				next_lru[snoop_addr.idx] = 1;
+
+				next_l_frame.valid = 0;
+				next_l_frame.dirty = 0;
+				next_l_frame.tag = l_frame[snoop_addr.idx].tag;
+				next_l_frame.data1 = l_frame[snoop_addr.idx].data1;
+				next_l_frame.data2 = l_frame[snoop_addr.idx].data2;
+
+				next_r_frame.valid = r_frame[snoop_addr.idx].valid;
+				next_r_frame.dirty = r_frame[snoop_addr.idx].dirty;
+				next_r_frame.tag = r_frame[snoop_addr.idx].tag;
+				next_r_frame.data1 = r_frame[snoop_addr.idx].data1;
+				next_r_frame.data2 = r_frame[snoop_addr.idx].data2;
+			end
+			else
+			begin
+				dcf.dstore = r_frame[snoop_addr.idx].data1;
+				dcf.daddr = {r_frame[snoop_addr.idx].tag,snoop_addr.idx,3'b100};
+				next_lru[snoop_addr.idx] = 0;
+				
+				next_l_frame.valid = l_frame[snoop_addr.idx].valid;
+				next_l_frame.dirty = l_frame[snoop_addr.idx].dirty;
+				next_l_frame.tag = l_frame[snoop_addr.idx].tag;
+				next_l_frame.data1 = l_frame[snoop_addr.idx].data1;
+				next_l_frame.data2 = l_frame[snoop_addr.idx].data2;
+
+				next_r_frame.valid = 0;
+				next_r_frame.dirty = 0;
+				next_r_frame.tag = r_frame[snoop_addr.idx].tag;
+				next_r_frame.data1 = r_frame[snoop_addr.idx].data1;
+				next_r_frame.data2 = r_frame[snoop_addr.idx].data2;
+			end
+		end
 		LD1:
 		begin 
+			dcf.cctrans = 1;
 			dcf.dREN = 1;
 			dcf.daddr = {daddr.tag,daddr.idx,3'b000};
 			if (lru[daddr.idx] == 0) begin
