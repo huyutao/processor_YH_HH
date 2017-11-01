@@ -72,31 +72,32 @@ program test;
   parameter PERIOD = 10;
 
   initial begin
-   	bus_controller_tb.nRST = 0;
-   	bus_controller_tb.cif0.iREN = 0;
-   	bus_controller_tb.cif0.dREN = 0;
-   	bus_controller_tb.cif0.dWEN = 0;
-   	bus_controller_tb.cif0.dstore = 0;
-   	bus_controller_tb.cif0.iaddr = 0;
-   	bus_controller_tb.cif0.daddr = 0;
-   	bus_controller_tb.cif0.ccwrite = 0;
-   	bus_controller_tb.cif0.cctrans = 0;
+    bus_controller_tb.nRST = 0;
+    bus_controller_tb.cif0.iREN = 0;
+    bus_controller_tb.cif0.dREN = 0;
+    bus_controller_tb.cif0.dWEN = 0;
+    bus_controller_tb.cif0.dstore = 0;
+    bus_controller_tb.cif0.iaddr = 0;
+    bus_controller_tb.cif0.daddr = 0;
+    bus_controller_tb.cif0.ccwrite = 0;
+    bus_controller_tb.cif0.cctrans = 0;
 
-   	bus_controller_tb.cif1.iREN = 0;
-   	bus_controller_tb.cif1.dREN = 0;
-   	bus_controller_tb.cif1.dWEN = 0;
-   	bus_controller_tb.cif1.dstore = 0;
-   	bus_controller_tb.cif1.iaddr = 0;
-   	bus_controller_tb.cif1.daddr = 0;
-   	bus_controller_tb.cif1.ccwrite = 0;
-   	bus_controller_tb.cif1.cctrans = 0;
+    bus_controller_tb.cif1.iREN = 0;
+    bus_controller_tb.cif1.dREN = 0;
+    bus_controller_tb.cif1.dWEN = 0;
+    bus_controller_tb.cif1.dstore = 0;
+    bus_controller_tb.cif1.iaddr = 0;
+    bus_controller_tb.cif1.daddr = 0;
+    bus_controller_tb.cif1.ccwrite = 0;
+    bus_controller_tb.cif1.cctrans = 0;
     @(posedge bus_controller_tb.CLK);
     bus_controller_tb.nRST = 1;
+
     #(PERIOD)
     @(posedge bus_controller_tb.CLK);          //CIF0 INVALID LOCALR  PUT READ ON BUS; CIF1 INVALID SNOOPR 
     bus_controller_tb.cif0.cctrans = 1;
-   	bus_controller_tb.cif0.dREN = 1;
-   	bus_controller_tb.cif0.daddr = 32'b1111000; //tag:1 index:111 block:0
+    bus_controller_tb.cif0.dREN = 1;
+    bus_controller_tb.cif0.daddr = 32'b1111000; //tag:1 index:111 block:0
     @(posedge bus_controller_tb.CLK);
     bus_controller_tb.cif0.cctrans = 0;        
     bus_controller_tb.cif1.cctrans = 1;
@@ -107,67 +108,87 @@ program test;
     @(negedge bus_controller_tb.cif0.dwait);
     #(PERIOD)
     bus_controller_tb.cif0.dREN = 0;
+    @(posedge bus_controller_tb.CLK);
 
-    @(posedge bus_controller_tb.CLK);
-    
-/*
-    #(PERIOD)                                   //CIF0 Shared SNOOPW;  CIF1 INVALID LOCALW  PUT  W ON BUS
-    bus_controller_tb.cif1.cctrans = 1;
-    bus_controller_tb.cif0.dREN = 0;
-    bus_controller_tb.cif1.dWEN = 1;
-    bus_controller_tb.cif1.daddr = 32'b11111100; //tag:11 index:111 block:1
-    bus_controller_tb.cif1.dstore = 32'b111;
-    //@(posedge ~bus_controller_tb.cif0.ccwait);
-    @(posedge bus_controller_tb.CLK);
-    bus_controller_tb.cif0.cctrans = 1;
-    @(posedge bus_controller_tb.CLK);
+    #(PERIOD)
+    @(posedge bus_controller_tb.CLK);          //wb
     bus_controller_tb.cif0.cctrans = 0;
-
-    # (PERIOD);           //CIF0 INVALID LOCALW  PUT  W ON BUS; CIF1 MODIFIED SNOOPW   WB
-    bus_controller_tb.cif1.dWEN = 0;
     bus_controller_tb.cif0.dWEN = 1;
-    bus_controller_tb.cif0.daddr = 32'b11111100; //tag:11 index:111 block:1 
-    bus_controller_tb.cif0.dstore = 32'b1111;   
-    @(posedge bus_controller_tb.CLK);
-    bus_controller_tb.cif1.cctrans = 1;
-    bus_controller_tb.cif1.ccwrite = 1;     //???
-    @(posedge bus_controller_tb.CLK);
-    bus_controller_tb.cif1.cctrans = 0;
-    bus_controller_tb.cif1.ccwrite = 0;    
-    #(PERIOD*3)    
-
-    # PERIOD;           //CIF0 MODIFIED SNOOPR  WB   ; CIF1 INVALID LOCALR PUT READ ON BUS
+    bus_controller_tb.cif0.dstore = 32'b111;
+    bus_controller_tb.cif0.daddr = 32'b11110000; //tag:11 index:110 block:0
+    @(posedge bus_controller_tb.CLK); 
+    @(negedge bus_controller_tb.cif0.dwait);
+    #(PERIOD)
+    bus_controller_tb.cif0.daddr = 32'b11110100; //tag:11 index:110 block:1
+    bus_controller_tb.cif0.dstore = 32'b11101;
+    @(negedge bus_controller_tb.cif0.dwait);
+    #(PERIOD)
     bus_controller_tb.cif0.dWEN = 0;
-    bus_controller_tb.cif1.dREN = 1;
-   	bus_controller_tb.cif1.daddr = 32'b1111100; //tag:1 index:111 block:1    
     @(posedge bus_controller_tb.CLK);
-    bus_controller_tb.cif1.cctrans = 1;
-    bus_controller_tb.cif1.ccwrite = 1;     //???
-    @(posedge bus_controller_tb.CLK);
-    bus_controller_tb.cif1.cctrans = 0;
-    bus_controller_tb.cif1.ccwrite = 0;    
-    #(PERIOD*3)    
 
-    # PERIOD;           //CIF0 Shared LOCALW   PUT INVALIDATION;  CIF1 Shared SNOOPW
-    bus_controller_tb.cif1.dREN = 0;
-    bus_controller_tb.cif0.dWEN = 1;
-   	bus_controller_tb.cif0.daddr = 32'b10111100; //tag:10 index:111 block:1  
-   	bus_controller_tb.cif0.dstore = 32'b11;
+    #(PERIOD)
+    @(posedge bus_controller_tb.CLK);          //iren
+    bus_controller_tb.cif0.cctrans = 0;
+    bus_controller_tb.cif0.iREN = 1;
+    bus_controller_tb.cif0.iaddr = 32'b11110100; //tag:11 index:110 block:0
+    @(posedge bus_controller_tb.CLK); 
+    @(negedge bus_controller_tb.cif0.iwait);
+    #(PERIOD)
+    bus_controller_tb.cif0.iREN = 0;    
+
+    #(PERIOD)
+    @(posedge bus_controller_tb.CLK);          //ccwb
+    bus_controller_tb.cif0.cctrans = 1;
+    bus_controller_tb.cif0.dREN = 1;
+    bus_controller_tb.cif0.daddr = 32'b11111000; //tag:11 index:111 block:0
     @(posedge bus_controller_tb.CLK);
+    bus_controller_tb.cif0.cctrans = 0;        
     bus_controller_tb.cif1.cctrans = 1;
-    bus_controller_tb.cif1.ccwrite = 0;     //???
-    @(posedge bus_controller_tb.CLK);
+    bus_controller_tb.cif1.ccwrite = 1;
+    bus_controller_tb.cif1.dstore = 32'b11;
+    bus_controller_tb.cif1.daddr = 32'b11111000; //tag:11 index:111 block:0
+    @(negedge bus_controller_tb.cif0.dwait);
+    #(PERIOD)
+    bus_controller_tb.cif0.daddr = 32'b11111100; //tag:11 index:111 block:1
+    bus_controller_tb.cif1.daddr = 32'b11111100; //tag:11 index:111 block:1
     bus_controller_tb.cif1.cctrans = 0;
+    bus_controller_tb.cif1.dstore = 32'b10;
+    @(negedge bus_controller_tb.cif0.dwait);
+    #(PERIOD)
     bus_controller_tb.cif1.ccwrite = 0; 
+    bus_controller_tb.cif0.dREN = 0;
+    @(posedge bus_controller_tb.CLK);
 
-    # PERIOD;           //CIF0 MODIFIED;        CIF1 INVALID
+/*
+    #(PERIOD)
+    @(posedge bus_controller_tb.CLK);          //wb
+    bus_controller_tb.cif0.cctrans = 0;
+    bus_controller_tb.cif0.dWEN = 1;
+    bus_controller_tb.cif0.dstore = 32'b111;
+    bus_controller_tb.cif0.daddr = 32'b11110000; //tag:11 index:110 block:0
+    @(posedge bus_controller_tb.CLK); 
+    @(negedge bus_controller_tb.cif0.dwait);
+    #(PERIOD)
+    bus_controller_tb.cif0.daddr = 32'b11110100; //tag:11 index:110 block:1
+    bus_controller_tb.cif0.dstore = 32'b11101;
+    @(negedge bus_controller_tb.cif0.dwait);
+    #(PERIOD)
+    bus_controller_tb.cif0.dWEN = 0;
+    @(posedge bus_controller_tb.CLK);
 
-*/
+    #(PERIOD)
+    @(posedge bus_controller_tb.CLK);          //CIF0  LOCALR  PUT READ ON BUS; CIF1 MODIFIED SNOOPR 
+    bus_controller_tb.cif0.cctrans = 0;
+    bus_controller_tb.cif0.iREN = 1;
+    bus_controller_tb.cif0.iaddr = 32'b11110100; //tag:11 index:110 block:0
+    @(posedge bus_controller_tb.CLK); 
+    @(negedge bus_controller_tb.cif0.dwait);
+    #(PERIOD)
 
     //@(posedge dcif.dhit);
     //@(negedge CLK);
 
-
+*/
     dump_memory();
   end
 
