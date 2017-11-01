@@ -36,7 +36,7 @@ module bus_controller_tb;
   assign ccif.ramstate = ramif.ramstate; 
 
 `ifndef MAPPED
-  bus_controller DUT();
+  bus_controller DUT(ccif,CLK,nRST);
 `else
   bus_controller DUT(
     .\CLK (CLK),
@@ -187,13 +187,13 @@ task automatic dump_memory();
       ramif.memaddr = i << 2;
       ramif.memREN = 1;
       repeat (4) @(posedge bus_controller_tb.CLK);
-      if (ramif.imemload === 0)
+      if (ramif.ramload === 0)
         continue;
-      values = {8'h04,16'(i),8'h00,ramif.imemload};
+      values = {8'h04,16'(i),8'h00,ramif.ramload};
       foreach (values[j])
         chksum += values[j];
       chksum = 16'h100 - chksum;
-      ihex = $sformatf(":04%h00%h%h",16'(i),ramif.imemload,8'(chksum));
+      ihex = $sformatf(":04%h00%h%h",16'(i),ramif.ramload,8'(chksum));
       $fdisplay(memfd,"%s",ihex.toupper());
     end //for
     if (memfd)
