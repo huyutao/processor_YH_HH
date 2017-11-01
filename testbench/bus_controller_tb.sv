@@ -96,12 +96,20 @@ program test;
     @(posedge bus_controller_tb.CLK);          //CIF0 INVALID LOCALR  PUT READ ON BUS; CIF1 INVALID SNOOPR 
     bus_controller_tb.cif0.cctrans = 1;
    	bus_controller_tb.cif0.dREN = 1;
-   	bus_controller_tb.cif0.daddr = 32'b1111100; //tag:1 index:111 block:1
-    @(posedge bus_controller_tb.CLK);        
-    bus_controller_tb.cif1.cctrans = 1;
+   	bus_controller_tb.cif0.daddr = 32'b1111000; //tag:1 index:111 block:0
     @(posedge bus_controller_tb.CLK);
+    bus_controller_tb.cif0.cctrans = 0;        
+    bus_controller_tb.cif1.cctrans = 1;
+    @(negedge bus_controller_tb.cif0.dwait);
+    #(PERIOD)
+    bus_controller_tb.cif0.daddr = 32'b1111100; //tag:1 index:111 block:1
     bus_controller_tb.cif1.cctrans = 0;
-    bus_controller_tb.cif0.cctrans = 0;
+    @(negedge bus_controller_tb.cif0.dwait);
+    #(PERIOD)
+    bus_controller_tb.cif0.dREN = 0;
+
+    @(posedge bus_controller_tb.CLK);
+    
 /*
     #(PERIOD)                                   //CIF0 Shared SNOOPW;  CIF1 INVALID LOCALW  PUT  W ON BUS
     bus_controller_tb.cif1.cctrans = 1;

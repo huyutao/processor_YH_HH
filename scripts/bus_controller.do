@@ -38,8 +38,10 @@ add wave -noupdate -group c1 /bus_controller_tb/ccif/cif1/ccinv
 add wave -noupdate -group c1 /bus_controller_tb/ccif/cif1/ccwrite
 add wave -noupdate -group c1 /bus_controller_tb/ccif/cif1/cctrans
 add wave -noupdate -group c1 /bus_controller_tb/ccif/cif1/ccsnoopaddr
+add wave -noupdate /bus_controller_tb/DUT/state
+add wave -noupdate /bus_controller_tb/DUT/next_state
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {34266 ps} 0}
+WaveRestoreCursors {{Cursor 1} {16827 ps} 0}
 quietly wave cursor active 1
 configure wave -namecolwidth 150
 configure wave -valuecolwidth 100
@@ -55,4 +57,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits ns
 update
-WaveRestoreZoom {0 ps} {131250 ps}
+WaveRestoreZoom {0 ps} {262500 ps}
