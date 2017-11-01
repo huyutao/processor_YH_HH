@@ -198,40 +198,40 @@ always_comb begin : OUTPUT_LOGIC
 		end
 		BUSWB1:
 		begin
-			if (ccif.dWEN[1])
-			begin
-				ccif.ramaddr = ccif.daddr[1];
-				ccif.ramWEN = 1;
-				ccif.ramstore = ccif.dstore[1];
-				ccif.dwait[1] = (ccif.ramstate != ACCESS);
-				ccif.ccwait[0] = 1;
-			end
-			else if (ccif.dWEN[0])
+			if (ccif.dWEN[0])
 			begin
 				ccif.ramaddr = ccif.daddr[0];
 				ccif.ramWEN = 1;
 				ccif.ramstore = ccif.dstore[0];
 				ccif.dwait[0] = (ccif.ramstate != ACCESS);
 				ccif.ccwait[1] = 1;
+			end
+			else if (ccif.dWEN[1])
+			begin
+				ccif.ramaddr = ccif.daddr[1];
+				ccif.ramWEN = 1;
+				ccif.ramstore = ccif.dstore[1];
+				ccif.dwait[1] = (ccif.ramstate != ACCESS);
+				ccif.ccwait[0] = 1;
 			end
 		end
 		BUSWB2:
 		begin
-			if (ccif.dWEN[1])
-			begin
-				ccif.ramaddr = ccif.daddr[1];
-				ccif.ramWEN = 1;
-				ccif.ramstore = ccif.dstore[1];
-				ccif.dwait[1] = (ccif.ramstate != ACCESS);
-				ccif.ccwait[0] = 1;
-			end
-			else if (ccif.dWEN[0])
+			if (ccif.dWEN[0])
 			begin
 				ccif.ramaddr = ccif.daddr[0];
 				ccif.ramWEN = 1;
 				ccif.ramstore = ccif.dstore[0];
 				ccif.dwait[0] = (ccif.ramstate != ACCESS);
 				ccif.ccwait[1] = 1;
+			end
+			else if (ccif.dWEN[1])
+			begin
+				ccif.ramaddr = ccif.daddr[1];
+				ccif.ramWEN = 1;
+				ccif.ramstore = ccif.dstore[1];
+				ccif.dwait[1] = (ccif.ramstate != ACCESS);
+				ccif.ccwait[0] = 1;
 			end
 		end
 		ICACHE_DIAOSI:
