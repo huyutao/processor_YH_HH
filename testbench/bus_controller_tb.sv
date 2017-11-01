@@ -94,14 +94,17 @@ program test;
     nRST = 1;
     #(PERIOD)
     @(posedge bus_controller_tb.CLK);          //CIF0 INVALID LOCALR  PUT READ ON BUS; CIF1 INVALID SNOOPR 
+    bus_controller_tb.cif0.cctrans = 1
    	bus_controller_tb.cif0.dREN = 1;
    	bus_controller_tb.cif0.daddr = 32'b1111100; //tag:1 index:111 block:1
     @(posedge bus_controller_tb.CLK);        
     bus_controller_tb.cif1.cctrans = 1
     @(posedge bus_controller_tb.CLK);
     bus_controller_tb.cif1.cctrans = 0
-
+    bus_controller_tb.cif0.cctrans = 0
+/*
     #(PERIOD)                                   //CIF0 Shared SNOOPW;  CIF1 INVALID LOCALW  PUT  W ON BUS
+    bus_controller_tb.cif1.cctrans = 1;
     bus_controller_tb.cif0.dREN = 0;
     bus_controller_tb.cif1.dWEN = 1;
     bus_controller_tb.cif1.daddr = 32'b11111100; //tag:11 index:111 block:1
@@ -151,7 +154,7 @@ program test;
 
     # PERIOD;           //CIF0 MODIFIED;        CIF1 INVALID
 
-
+*/
 
     //@(posedge dcif.dhit);
     //@(negedge CLK);
