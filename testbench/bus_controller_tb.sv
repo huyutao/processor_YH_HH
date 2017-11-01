@@ -168,9 +168,9 @@ task automatic dump_memory();
     string filename = "memcpu.hex";
     int memfd;
 
-    dcif.imemaddr = 0;
-    dcif.dmemWEN = 0;
-    dcif.imemREN = 0;
+    ramif.memaddr = 0;
+    ramif.memWEN = 0;
+    ramif.memREN = 0;
 
     memfd = $fopen(filename,"w");
     if (memfd)
@@ -184,21 +184,21 @@ task automatic dump_memory();
       bit [7:0][7:0] values;
       string ihex;
 
-      dcif.imemaddr = i << 2;
-      dcif.imemREN = 1;
+      ramif.memaddr = i << 2;
+      ramif.memREN = 1;
       repeat (4) @(posedge bus_controller_tb.CLK);
-      if (dcif.imemload === 0)
+      if (ramif.imemload === 0)
         continue;
-      values = {8'h04,16'(i),8'h00,dcif.imemload};
+      values = {8'h04,16'(i),8'h00,ramif.imemload};
       foreach (values[j])
         chksum += values[j];
       chksum = 16'h100 - chksum;
-      ihex = $sformatf(":04%h00%h%h",16'(i),dcif.imemload,8'(chksum));
+      ihex = $sformatf(":04%h00%h%h",16'(i),ramif.imemload,8'(chksum));
       $fdisplay(memfd,"%s",ihex.toupper());
     end //for
     if (memfd)
     begin
-      dcif.imemREN = 0;
+      ramif.memREN = 0;
       $fdisplay(memfd,":00000001FF");
       $fclose(memfd);
       $display("Finished memory dump.");
