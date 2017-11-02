@@ -7,7 +7,6 @@
 
 
 module dcache (
-
 	datapath_cache_if dcif,
 	caches_if.dcache dcf,
 	input logic CLK, nRST
