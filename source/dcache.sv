@@ -285,7 +285,6 @@ always_comb begin : OUTPUT_LOGIC
 					if(l_frame[daddr.idx].dirty == 0)
 					begin
 						dcf.cctrans = 1;
-						dcf.ccwrite = 1;
 						dcf.daddr = dcif.dmemaddr;
 					end
 
@@ -303,7 +302,6 @@ always_comb begin : OUTPUT_LOGIC
 					if(r_frame[daddr.idx].dirty == 0)
 					begin
 						dcf.cctrans = 1;
-						dcf.ccwrite = 1;
 						dcf.daddr = dcif.dmemaddr;
 					end
 				end
