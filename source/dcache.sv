@@ -102,6 +102,8 @@ always_comb begin : NEXT_LOGIC
 	next_flush_i = flush_i;
 	clean_l_dirty = 0;
 	clean_r_dirty = 0;
+	next_l_valid = 1;
+	next_r_valid = 1;
 	casez (state) 
 		IDLE_D:
 		begin
@@ -109,8 +111,9 @@ always_comb begin : NEXT_LOGIC
 			begin
 				next_state = SNOOP_DIAOSI;
 			end
-			if (dcif.halt) next_state = CLEAN;
-			if (miss == 1)
+			else if (dcif.halt) 
+				next_state = CLEAN;
+			else if (miss == 1)
 			begin
 				if((lru[daddr.idx] && r_frame[daddr.idx].dirty) || (!lru[daddr.idx] && l_frame[daddr.idx].dirty))
 					next_state = WB1;

@@ -132,7 +132,7 @@ always_comb begin : NEXT_LOGIC
 		end
 		SNOOPING2_DIAOSI: 
 		begin
-			if (ccif.dREN[0] == 0)
+			if (ccif.dREN[1] == 0)
 			begin
 				next_state = IDLE_B_DIAOSI;
 			end
