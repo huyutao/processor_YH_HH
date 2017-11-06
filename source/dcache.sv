@@ -180,7 +180,7 @@ always_comb begin : NEXT_LOGIC
 					next_flush_i = flush_i + 1; 
 				end
 			end else begin
-				next_state = HLT_CNT;
+				next_state = HALT_D;
 			end
 		end
 		FLUSH1: 
@@ -204,10 +204,6 @@ always_comb begin : NEXT_LOGIC
 					clean_r_dirty = 0;
 				end
 			end
-		end
-		HLT_CNT: 
-		begin
-			if (dcf.dwait == 0) next_state = HALT_D;
 		end
 	endcase
 end
@@ -453,6 +449,8 @@ always_comb begin : OUTPUT_LOGIC
 				dcf.daddr = {r_frame[flush_i].tag,flush_i[2:0],3'b000};
 				dcf.dstore = r_frame[flush_i].data1;
 			end
+			if (dcf.ccwait)
+				dcf.cctrans = 1;
 		end
 		FLUSH2:  
 		begin
@@ -467,16 +465,14 @@ always_comb begin : OUTPUT_LOGIC
 				dcf.daddr = {r_frame[flush_i].tag,flush_i[2:0],3'b100};
 				dcf.dstore = r_frame[flush_i].data2;
 			end
-		end
-		HLT_CNT: 
-		begin
-			dcf.dWEN = 1;
-			dcf.daddr = 32'h00003100;
-			dcf.dstore = hit_cnt;
+			if (dcf.ccwait)
+				dcf.cctrans = 1;
 		end
 		HALT_D:
 		begin
 			dcif.flushed = 1;
+			if (dcf.ccwait)
+				dcf.cctrans = 1;
 		end
 	endcase
 

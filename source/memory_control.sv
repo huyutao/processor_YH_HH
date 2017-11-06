@@ -75,7 +75,7 @@ always_comb begin : NEXT_LOGIC
 			if (ccif.ramstate == ACCESS)
 			begin
 				next_state = IDLE_B_DIAOSI;
-			end
+			end 
 		end
 		ICACHE_DIAOSI:
 		begin
