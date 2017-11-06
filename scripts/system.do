@@ -159,12 +159,12 @@ add wave -noupdate -group DP1 /system_tb/DUT/CPU/DP1/EM/em/imemload_o1
 add wave -noupdate -group DP1 /system_tb/DUT/CPU/DP1/EM/em/dmemstore_i3
 add wave -noupdate -group DP1 /system_tb/DUT/CPU/DP1/EM/em/dmemstore_o3
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {1313812784 ps} 0}
+WaveRestoreCursors {{Cursor 1} {1313796144 ps} 0}
 quietly wave cursor active 1
-configure wave -namecolwidth 397
+configure wave -namecolwidth 173
 configure wave -valuecolwidth 103
 configure wave -justifyvalue left
-configure wave -signalnamewidth 0
+configure wave -signalnamewidth 1
 configure wave -snapdistance 10
 configure wave -datasetprefix 0
 configure wave -rowmargin 4
@@ -175,4 +175,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits ns
 update
-WaveRestoreZoom {1313568746 ps} {1314797688 ps}
+WaveRestoreZoom {1313568746 ps} {1315076033 ps}

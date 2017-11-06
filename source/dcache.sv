@@ -342,7 +342,7 @@ always_comb begin : OUTPUT_LOGIC
 			dcf.dWEN = 1;
 			if (snoop_addr.tag==l_frame[snoop_addr.idx].tag)
 			begin
-				dcf.dstore = l_frame[snoop_addr.idx].data1;
+				dcf.dstore = l_frame[snoop_addr.idx].data2;
 				dcf.daddr = {l_frame[snoop_addr.idx].tag,snoop_addr.idx,3'b100};
 				next_lru[snoop_addr.idx] = 1;
 
@@ -360,7 +360,7 @@ always_comb begin : OUTPUT_LOGIC
 			end
 			else
 			begin
-				dcf.dstore = r_frame[snoop_addr.idx].data1;
+				dcf.dstore = r_frame[snoop_addr.idx].data2;
 				dcf.daddr = {r_frame[snoop_addr.idx].tag,snoop_addr.idx,3'b100};
 				next_lru[snoop_addr.idx] = 0;
 				
