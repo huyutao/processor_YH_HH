@@ -284,6 +284,7 @@ always_comb begin : OUTPUT_LOGIC
 		end
 		C1CACHE1_DIAOSI: 
 		begin
+			ccif.ccsnoopaddr[1] = ccif.daddr[0];
 			ccif.ramaddr = ccif.daddr[1];
 			ccif.ramWEN = 1;
 			ccif.ramstore = ccif.dstore[1];
@@ -293,6 +294,7 @@ always_comb begin : OUTPUT_LOGIC
 		end
 		C1CACHE2_DIAOSI: 
 		begin
+			ccif.ccsnoopaddr[1] = ccif.daddr[0];
 			ccif.ramaddr = ccif.daddr[1];
 			ccif.ramWEN = 1;
 			ccif.ramstore = ccif.dstore[1];
@@ -323,6 +325,7 @@ always_comb begin : OUTPUT_LOGIC
 		end
 		C2CACHE1_DIAOSI: 
 		begin 
+			ccif.ccsnoopaddr[0] = ccif.daddr[1];
 			ccif.ramaddr = ccif.daddr[0];
 			ccif.ramWEN = 1;
 			ccif.ramstore = ccif.dstore[0];
@@ -332,6 +335,7 @@ always_comb begin : OUTPUT_LOGIC
 		end
 		C2CACHE2_DIAOSI: 
 		begin
+			ccif.ccsnoopaddr[0] = ccif.daddr[1];
 			ccif.ramaddr = ccif.daddr[0];
 			ccif.ramWEN = 1;
 			ccif.ramstore = ccif.dstore[0];
