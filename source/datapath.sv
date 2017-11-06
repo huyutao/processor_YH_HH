@@ -11,7 +11,6 @@
 
 `include "control_unit_if.vh"
 `include "request_unit_if.vh"
-`include "pc_if.vh"
 `include "register_file_if.vh"
 `include "alu_if.vh"
 `include "stage_if.vh"
@@ -35,7 +34,6 @@ module datapath (
 
   //interface
   control_unit_if cuif();
-  pc_if pcif();
   register_file_if rfif();
   alu_if aluif ();
   stage_if stif ();
@@ -43,7 +41,6 @@ module datapath (
   forwarding_unit_if fuif();
   //DUT
   control_unit        CU(cuif);
-  pc                  PC(CLK, nRST,pcif);
   register_file       RF(CLK, nRST,rfif);
   alu                 ALU (aluif);
   if_dc               ID (CLK, nRST, stif);
@@ -55,24 +52,41 @@ module datapath (
   //pipeline regs
 
   logic   branch_sel;
+  word_t pc_out, pc_input, npc;
+  logic pc_en;
+
+
+  always_ff@(posedge CLK, negedge nRST) begin
+  if (!nRST) 
+      pc_out <= PC_INIT;
+  else begin
+      if (pc_en == 1)
+          pc_out <= pc_input;
+      else                    //?
+          pc_out <= pc_out;
+
+  end
+end
+
+assign npc = pc_out+4;
 
   //pc_signal control
   always_comb
     begin
       casez(stif.PCSrc_o2)  
-        ADD4_DIAOSI:       pcif.pc3 = pcif.npc;
-        BRANCH_DIAOSI:     pcif.pc3 = stif.branch_addr_i3;
-        JUMP_DIAOSI:       pcif.pc3 = stif.jump_addr_i3;
-        JR_DIAOSI:         pcif.pc3 = stif.jr_addr_i3;   
-        default:           pcif.pc3 = pcif.npc;
+        ADD4_DIAOSI:       pc_input = npc;
+        BRANCH_DIAOSI:     pc_input = stif.branch_addr_i3;
+        JUMP_DIAOSI:       pc_input = stif.jump_addr_i3;
+        JR_DIAOSI:         pc_input = stif.jr_addr_i3;   
+        default:           pc_input = npc;
       endcase 
   end
-  assign pcif.pc_en = dcif.ihit & huif.pc_en;
+  assign pc_en = dcif.ihit & huif.pc_en;
   //icache control
   assign dcif.imemREN      = ~(dcif.dmemREN | dcif.dmemWEN) & !dcif.halt;
-  assign dcif.imemaddr     = pcif.PC; 
+  assign dcif.imemaddr     = pc_out; 
   //if_dc 
-  assign stif.npc_i1       = pcif.npc;
+  assign stif.npc_i1       = npc;
   assign stif.imemload_i1  = dcif.imemload;
   assign stif.flushed1     = huif.flushed1; 
   assign stif.flushed2     = huif.flushed2; 
@@ -329,8 +343,8 @@ endmodule
   //program counter signal
   assign pcif.imm16 = cuif.imm16;
   assign pcif.j_addr26 = cuif.j_addr26;
-  assign pcif.PCSrc = cuif.PCSrc;
-  assign pcif.pc_next = cuif.pc_next;
+  assign pc_outSrc = cuif.PCSrc;
+  assign pc_out_next = cuif.pc_next;
   assign pcif.jr = rfif.rdat1;
   assign dpif.imemaddr = pcif.i_addr;
 
