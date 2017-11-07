@@ -153,6 +153,10 @@ always_comb begin : NEXT_LOGIC
 		end
 		LD1:
 		begin 
+			if (dcf.ccwait)
+			begin
+				next_state = SNOOP_DIAOSI;
+			end
 			if (dcf.dwait == 0) next_state = LD2;
 		end
 		LD2: 
@@ -384,13 +388,11 @@ always_comb begin : OUTPUT_LOGIC
 			dcf.daddr = {daddr.tag,daddr.idx,3'b000};
 			if (lru[daddr.idx] == 0) begin
 				next_l_frame.data1 = dcf.dload;
-				next_l_frame.tag   = daddr.tag;
-				next_l_frame.valid   = 1;
+				next_l_frame.valid   = 0;
 			end
 			else begin
 				next_r_frame.data1 = dcf.dload;
-				next_r_frame.tag   = daddr.tag;
-				next_r_frame.valid   = 1;
+				next_r_frame.valid   = 0;
 			end
 		end
 		LD2: 
