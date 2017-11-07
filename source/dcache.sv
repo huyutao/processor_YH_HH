@@ -410,6 +410,7 @@ always_comb begin : OUTPUT_LOGIC
 		end
 		WB1: 
 		begin 
+			dcf.ccwrite = 1;
 			dcf.dWEN = 1;
 			if (lru[daddr.idx] == 0)
 			begin
@@ -424,6 +425,7 @@ always_comb begin : OUTPUT_LOGIC
 		end
 		WB2: 
 		begin 
+			dcf.ccwrite = 1;
 			dcf.dWEN = 1;
 			if (lru[daddr.idx] == 0)
 			begin
@@ -438,6 +440,7 @@ always_comb begin : OUTPUT_LOGIC
 		end
 		FLUSH1: 
 		begin
+			dcf.ccwrite = 1;
 			dcf.dWEN = 1;
 			if (l_frame[flush_i].dirty)
 			begin
@@ -454,6 +457,7 @@ always_comb begin : OUTPUT_LOGIC
 		end
 		FLUSH2:  
 		begin
+			dcf.ccwrite = 1;
 			dcf.dWEN = 1;
 			if (l_frame[flush_i].dirty)
 			begin
