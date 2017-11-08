@@ -16,8 +16,8 @@ add wave -noupdate -expand -group Processor /dcache_tb/dcif/dmemload
 add wave -noupdate -expand -group Processor /dcache_tb/dcif/dmemstore
 add wave -noupdate -expand -group Processor /dcache_tb/dcif/dmemaddr
 add wave -noupdate -expand -group {state machine} /dcache_tb/DUT/daddr
-add wave -noupdate -expand -group {state machine} /dcache_tb/DUT/l_frame
-add wave -noupdate -expand -group {state machine} /dcache_tb/DUT/r_frame
+add wave -noupdate -expand -group {state machine} -expand /dcache_tb/DUT/l_frame
+add wave -noupdate -expand -group {state machine} -expand /dcache_tb/DUT/r_frame
 add wave -noupdate -expand -group {state machine} /dcache_tb/DUT/next_l_frame
 add wave -noupdate -expand -group {state machine} /dcache_tb/DUT/next_r_frame
 add wave -noupdate -expand -group {state machine} /dcache_tb/DUT/state
@@ -28,10 +28,14 @@ add wave -noupdate -expand -group {state machine} /dcache_tb/DUT/flush_i
 add wave -noupdate -expand -group {state machine} /dcache_tb/DUT/next_flush_i
 add wave -noupdate -expand -group {state machine} /dcache_tb/DUT/hit_cnt
 add wave -noupdate -expand -group {state machine} /dcache_tb/DUT/next_hit_cnt
-add wave -noupdate -expand -group {state machine} /dcache_tb/DUT/w_en_table
 add wave -noupdate -expand -group {state machine} /dcache_tb/DUT/hit
+add wave -noupdate /dcache_tb/DUT/dcf/ccwait
+add wave -noupdate /dcache_tb/DUT/dcf/ccinv
+add wave -noupdate /dcache_tb/DUT/dcf/ccwrite
+add wave -noupdate /dcache_tb/DUT/dcf/cctrans
+add wave -noupdate /dcache_tb/DUT/dcf/ccsnoopaddr
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {34 ns} 0}
+WaveRestoreCursors {{Cursor 1} {542 ns} 0}
 quietly wave cursor active 1
 configure wave -namecolwidth 150
 configure wave -valuecolwidth 100
@@ -47,4 +51,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits ns
 update
-WaveRestoreZoom {0 ns} {192 ns}
+WaveRestoreZoom {488 ns} {680 ns}
