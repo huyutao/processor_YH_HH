@@ -102,8 +102,8 @@ always_comb begin : NEXT_LOGIC
 	next_flush_i = flush_i;
 	clean_l_dirty = 0;
 	clean_r_dirty = 0;
-	next_l_valid = 1;
-	next_r_valid = 1;
+	next_l_valid = l_frame[snoop_addr.idx].valid;
+	next_r_valid = r_frame[snoop_addr.idx].valid;
 	casez (state) 
 		IDLE_D:
 		begin
@@ -128,7 +128,7 @@ always_comb begin : NEXT_LOGIC
 			next_state = IDLE_D;
 			if (snoop_addr.tag==l_frame[snoop_addr.idx].tag && l_frame[snoop_addr.idx].valid)
 			begin
-				next_l_valid = ~dcf.ccinv;
+				next_l_valid = dcf.ccinv?0:next_l_valid;
 				if (l_frame[snoop_addr.idx].dirty)
 				begin
 					next_state = CCWB1;
@@ -136,7 +136,7 @@ always_comb begin : NEXT_LOGIC
 			end
 			else if (snoop_addr.tag==r_frame[snoop_addr.idx].tag && r_frame[snoop_addr.idx].valid)
 			begin
-				next_r_valid = ~dcf.ccinv;
+				next_r_valid = dcf.ccinv?0:next_r_valid;
 				if (r_frame[snoop_addr.idx].dirty)
 				begin
 					next_state = CCWB1;
