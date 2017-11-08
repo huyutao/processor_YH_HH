@@ -24,7 +24,7 @@ module dcache_tb;
   test PROG();
 
 `ifndef MAPPED
-  dcache DUT(CLK, nRST, dcif, cif);
+  dcache DUT(dcif, cif, CLK, nRST);
 
 `else
   dcache DUT(
@@ -35,6 +35,9 @@ module dcache_tb;
     .\dcif.dmemWEN(dcif.dmemWEN),
     .\dcif.dmemaddr(dcif.dmemaddr),
     .\dcif.dmemstore(dcif.dmemstore),  
+    .\cif.ccwait(cif.ccwait),
+    .\cif.ccinv(cif.ccinv),
+    .\cif.ccsnoopaddr(cif.ccsnoopaddr),
     .\cif.dwait(cif.dwait),
     .\cif.dload(cif.dload)
   );
@@ -155,9 +158,24 @@ import cpu_types_pkg::*;
   @(posedge dcache_tb.dcif.dhit)
   #(PERIOD); 
   dcache_tb.dcif.dmemWEN = 0;
-  #(PERIOD*5); 
+  #(PERIOD*3); 
 
-
+  dcache_tb.cif.ccwait = 1;
+  dcache_tb.cif.ccsnoopaddr = 32'b11111100;
+  #(PERIOD);    
+  @(negedge dcache_tb.CLK)
+  dcache_tb.cif.dwait = 0;
+  #(PERIOD); 
+  dcache_tb.cif.dwait = 1;
+  #(PERIOD);    
+  dcache_tb.cif.dwait = 0;
+  #(PERIOD); 
+  dcache_tb.cif.dwait = 1;
+  #(PERIOD);    
+  dcache_tb.cif.dwait = 0;
+  #(PERIOD); 
+  dcache_tb.cif.ccwait = 0;
+  dcache_tb.cif.ccsnoopaddr = 0;
 //halt
   dcache_tb.dcif.halt = 1;
   #(PERIOD);  
@@ -178,9 +196,6 @@ import cpu_types_pkg::*;
   #(PERIOD); 
   dcache_tb.cif.dwait = 1;   
   #(PERIOD);  
-  dcache_tb.cif.dwait = 0;      //flush cnt
-  #(PERIOD); 
-  dcache_tb.cif.dwait = 1;
-  #(PERIOD);
+ 
   end
  endprogram
