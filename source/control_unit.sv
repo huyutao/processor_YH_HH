@@ -36,14 +36,15 @@ assign cuif.lui = {cuif.imm16,16'b0};
 always_comb 
 begin
 	cuif.zero_sel = BNE_DIAOSI;
-	cuif.d_ren = (opcode == LW);
-	cuif.d_wen = (opcode == SW);
+	cuif.d_ren = (opcode == LW || opcode == LL);
+	cuif.d_wen = (opcode == SW || opcode == SC);
+	cuif.d_atomic = (opcode == LL || opcode == SC);
 
 	cuif.alu_op = ALU_SLL;
 
     cuif.wsel = (opcode==RTYPE)?rd:(opcode==JAL)?31:rt;
 	cuif.rsel1 = rs;
-	cuif.rsel2 = (opcode==RTYPE || opcode==BEQ || opcode==BNE || opcode==SW)?rt:0;
+	cuif.rsel2 = (opcode==RTYPE || opcode==BEQ || opcode==BNE || opcode==SW || opcode==SC)?rt:0;
 	cuif.wen = 1;
 
     cuif.PCSrc = ADD4_DIAOSI;      // ADD4_DIAOSI,JUMP_DIAOSI,JR_DIAOSI,BRANCH_DIAOSI
@@ -71,21 +72,6 @@ begin
     	cuif.halt = 1;
     else
     	cuif.halt = 0;
- /*   else    edit in the future
-    begin
-    	if(cuif.overflow_f)
-    	begin
-	    	if(opcode==RTYPE && (funct==SUB || funct==ADD))
-	    	begin
-	    		next_halt = 1;
-	    	end
-	    	if(opcode==ADDI)
-	    	begin
-	    		next_halt = 1;
-	    	end
-	    end
-    end*/
-
 
 	casez(opcode)
 		RTYPE:
@@ -174,9 +160,18 @@ begin
 			cuif.W_mux = DATA_DIAOSI;
 			cuif.alu_op = ALU_ADD;
 		end
+		LL:
+		begin
+			cuif.W_mux = DATA_DIAOSI;
+			cuif.alu_op = ALU_ADD;
+		end
 		SW:
 		begin
 			cuif.wen = 0;
+			cuif.alu_op = ALU_ADD;
+		end
+		SC:
+		begin
 			cuif.alu_op = ALU_ADD;
 		end
 	    SLTI:

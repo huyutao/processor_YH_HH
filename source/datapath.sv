@@ -150,6 +150,7 @@ assign npc = pc_out+4;
   assign stif.wen_i2        = cuif.wen;
   assign stif.wsel_i2       = cuif.wsel;
   assign stif.alu_op_i2     = cuif.alu_op;
+  assign stif.d_atomic_i2   = cuif.d_atomic;
   assign stif.rdat1_i2      = rfif.rdat1;
   assign stif.rdat2_i2      = rfif.rdat2;
   assign stif.rsel1_i2      = rfif.rsel1;
@@ -254,6 +255,7 @@ assign npc = pc_out+4;
   assign dcif.dmemREN        = stif.d_ren_o3;
   assign dcif.dmemstore      = stif.dmemstore_o3;
   assign dcif.dmemaddr       = stif.dmemaddr_o3;
+  assign dcif.datomic        = stif.d_atomic_o3;
   always @(posedge CLK, negedge nRST)
   begin
     if (1'b0 == nRST)

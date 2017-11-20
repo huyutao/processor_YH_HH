@@ -18,6 +18,7 @@ interface stage_if;
   			      d_ren_i2, d_ren_o2, d_ren_i3, d_ren_o3, d_ren_i4, d_ren_o4,
   			      d_wen_i2, d_wen_o2, d_wen_i3, d_wen_o3,
   			      wen_i2, wen_o2, wen_i3, wen_o3, wen_i4, wen_o4, 
+              d_atomic_i2, d_atomic_o2,d_atomic_i3,d_atomic_o3,
               flushed1, flushed2, flushed3;
 
   ZERO_SEL_t  zero_sel_i2, zero_sel_o2;
@@ -58,21 +59,21 @@ interface stage_if;
   modport dc_ex (
   	input  pipe2_en, npc_i2, ext32_i2, j_addr26_i2, imm16_i2, LUI_i2, zero_sel_i2,PCSrc_i2,
   	ALUSrc_i2, W_mux_i2,  shamt_i2, halt_i2, d_ren_i2, d_wen_i2, wen_i2, 
-  	wsel_i2, alu_op_i2, rdat1_i2, rdat2_i2, imemload_i2, rsel1_i2, rsel2_i2,flushed2,
+  	wsel_i2, alu_op_i2, rdat1_i2, rdat2_i2, imemload_i2, rsel1_i2, rsel2_i2,flushed2,d_atomic_i2,
 
   	output  npc_o2, ext32_o2, j_addr26_o2, imm16_o2, LUI_o2, zero_sel_o2,PCSrc_o2,
   	ALUSrc_o2, W_mux_o2,  shamt_o2, halt_o2,  d_ren_o2, d_wen_o2, wen_o2, 
-  	wsel_o2, alu_op_o2, rdat1_o2, rdat2_o2, imemload_o2, rsel2_o2, rsel1_o2
+  	wsel_o2, alu_op_o2, rdat1_o2, rdat2_o2, imemload_o2, rsel2_o2, rsel1_o2, d_atomic_o2
   );
 
   modport ex_mem (
   	input  pipe3_en, flushed3, jump_addr_i3, npc_i3, branch_addr_i3, jr_addr_i3, PCSrc_i3, W_mux_i3, 
   	LUI_i3, wen_i3, wsel_i3, d_wen_i3, d_ren_i3, dmemstore_i3,
-  	halt_i3, dmemaddr_i3,imemload_i3,
+  	halt_i3, dmemaddr_i3,imemload_i3, d_atomic_i3,
 
    	output jump_addr_o3, npc_o3, branch_addr_o3, jr_addr_o3, PCSrc_o3, W_mux_o3, 
   	LUI_o3, wen_o3, wsel_o3, d_wen_o3, d_ren_o3, dmemstore_o3,
-  	halt_o3, dmemaddr_o3, imemload_o3
+  	halt_o3, dmemaddr_o3, imemload_o3, d_atomic_o3
   );
 
   modport mem_wb (

@@ -28,19 +28,20 @@ interface control_unit_if;
   ALUSrc_t ALUSrc;
   ExtOP_t ExtOP;
   logic halt;
+  logic d_atomic;
 
   // register file ports
   modport cu (
     input   instr, 
     output  alu_op, d_ren, d_wen,
     wsel,rsel1,rsel2, wen, imm16, j_addr26, shamt, lui, PCSrc, 
-    W_mux, ALUSrc, ExtOP, halt, zero_sel
+    W_mux, ALUSrc, ExtOP, halt, zero_sel, d_atomic
   );
   // register file tb
   modport tb (
     input   alu_op, d_ren, d_wen,
     wsel,rsel1,rsel2, wen, imm16, j_addr26, shamt, lui, PCSrc, 
-    W_mux, ALUSrc, ExtOP, halt, zero_sel,
+    W_mux, ALUSrc, ExtOP, halt, zero_sel, d_atomic,
     output  instr
   );
 

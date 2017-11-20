@@ -40,6 +40,7 @@ always_ff@(posedge CLK, negedge nRST) begin
         de.imemload_o2 <= 0;
         de.rsel1_o2    <= 0;  
         de.rsel2_o2    <= 0;
+        de.d_atomic_o2 <= 0;
 	end 
   	else begin
         if (de.flushed2) begin
@@ -64,6 +65,7 @@ always_ff@(posedge CLK, negedge nRST) begin
             de.imemload_o2 <= 0;
             de.rsel1_o2    <= 0;  
             de.rsel2_o2    <= 0;
+            de.d_atomic_o2 <= 0;
         end
     	else if (de.pipe2_en) begin
             de.npc_o2       <= de.npc_i2;
@@ -87,6 +89,7 @@ always_ff@(posedge CLK, negedge nRST) begin
             de.imemload_o2  <= de.imemload_i2;
             de.rsel1_o2     <= de.rsel1_i2;  
             de.rsel2_o2     <= de.rsel2_i2;
+            de.d_atomic_o2  <= de.d_atomic_i2;
     	end 
         else begin
             de.npc_o2       <= de.npc_o2;
@@ -110,6 +113,7 @@ always_ff@(posedge CLK, negedge nRST) begin
             de.imemload_o2  <= de.imemload_o2;
             de.rsel1_o2     <= de.rsel1_o2;  
             de.rsel2_o2     <= de.rsel2_o2;
+            de.d_atomic_o2  <= de.d_atomic_o2;
     	end
     end
 end
