@@ -7,8 +7,8 @@
 
 
 module dcache (
-	datapath_cache_if dcif,
-	caches_if.dcache dcf,
+	datapath_cache_if dcif,   //top to datapath
+	caches_if.dcache dcf,     //bot to memory
 	input logic CLK, nRST
 );
 
@@ -17,6 +17,18 @@ import diaosi_types_pkg::*;
 logic hit, miss;
 
 integer i;
+
+word_t lk_reg, next_lk_reg;
+logic lk_valid, next_lk_valid;
+logic sc_state, ll_state;
+logic real_WEN;
+
+assign sc_state = (dcif.datomic & dcif.dmemWEN);
+assign ll_state = (dcif.datomic & dcif.dmemREN);
+
+
+assign next_lk_reg = ll_state?dcif.dmemaddr:lk_reg;
+
 
 dcachef_t daddr, snoop_addr;
 assign daddr.tag = dcif.dmemaddr[31:6];
@@ -41,6 +53,7 @@ always_ff @(posedge CLK, negedge nRST) begin
 	if(!nRST) begin
 		state <= IDLE_D;
 		flush_i <= 0;
+		lk_reg <= 0;
 		for (i = 0; i < 8; i++) begin
 			 l_frame[i].valid <= 0;
 			 l_frame[i].dirty <= 0;
@@ -53,42 +66,51 @@ always_ff @(posedge CLK, negedge nRST) begin
 			 r_frame[i].data1 <= 0;
 			 r_frame[i].data2 <= 0;
 			 lru[i] <= 0;
+			 lk_valid <= 0;
 		end
 	end else if (state == FLUSH2) begin
-		state <= next_state;
+		state                  <= next_state;
 		l_frame[flush_i].dirty <= clean_l_dirty;
 		r_frame[flush_i].dirty <= clean_r_dirty;
+		lk_reg                 <= next_lk_reg;
+		lk_valid               <= next_lk_valid;
 	end else if (state == SNOOP_DIAOSI) begin
-		state <= next_state;
+		state                         <= next_state;
 		l_frame[snoop_addr.idx].valid <= next_l_valid;
 		r_frame[snoop_addr.idx].valid <= next_r_valid;
+		lk_reg                        <= next_lk_reg;
+		lk_valid                      <= next_lk_valid;
 	end else if (state == CCWB2) begin
 		state <= next_state;
 		r_frame[snoop_addr.idx].valid <= next_r_frame.valid;
 		r_frame[snoop_addr.idx].dirty <= next_r_frame.dirty;
-		r_frame[snoop_addr.idx].tag <= next_r_frame.tag;
+		r_frame[snoop_addr.idx].tag   <= next_r_frame.tag;
 		r_frame[snoop_addr.idx].data1 <= next_r_frame.data1;
 		r_frame[snoop_addr.idx].data2 <= next_r_frame.data2;
 		l_frame[snoop_addr.idx].valid <= next_l_frame.valid;
 		l_frame[snoop_addr.idx].dirty <= next_l_frame.dirty;
-		l_frame[snoop_addr.idx].tag <= next_l_frame.tag;
+		l_frame[snoop_addr.idx].tag   <= next_l_frame.tag;
 		l_frame[snoop_addr.idx].data1 <= next_l_frame.data1;
 		l_frame[snoop_addr.idx].data2 <= next_l_frame.data2;
-		lru[snoop_addr.idx] <= next_lru[snoop_addr.idx];
+		lru[snoop_addr.idx]           <= next_lru[snoop_addr.idx];
+		lk_reg                        <= next_lk_reg;
+		lk_valid                      <= next_lk_valid;
 	end else begin
+		lk_reg <= next_lk_reg;
 		state <= next_state;
 		flush_i <= next_flush_i;
 		r_frame[daddr.idx].valid <= next_r_frame.valid;
 		r_frame[daddr.idx].dirty <= next_r_frame.dirty;
-		r_frame[daddr.idx].tag <= next_r_frame.tag;
+		r_frame[daddr.idx].tag   <= next_r_frame.tag;
 		r_frame[daddr.idx].data1 <= next_r_frame.data1;
 		r_frame[daddr.idx].data2 <= next_r_frame.data2;
 		l_frame[daddr.idx].valid <= next_l_frame.valid;
 		l_frame[daddr.idx].dirty <= next_l_frame.dirty;
-		l_frame[daddr.idx].tag <= next_l_frame.tag;
+		l_frame[daddr.idx].tag   <= next_l_frame.tag;
 		l_frame[daddr.idx].data1 <= next_l_frame.data1;
 		l_frame[daddr.idx].data2 <= next_l_frame.data2;
-		lru[daddr.idx] <= next_lru[daddr.idx];
+		lru[daddr.idx]           <= next_lru[daddr.idx];
+		lk_valid                 <= next_lk_valid;
 	end
 end
 
@@ -101,6 +123,8 @@ always_comb begin : NEXT_LOGIC
 	clean_r_dirty = 0;
 	next_l_valid = l_frame[snoop_addr.idx].valid;
 	next_r_valid = r_frame[snoop_addr.idx].valid;
+	next_lk_valid = (lk_reg != next_lk_reg);
+
 	casez (state) 
 		IDLE_D:
 		begin
@@ -116,13 +140,18 @@ always_comb begin : NEXT_LOGIC
 					next_state = WB1;
 				else
 					next_state = LD1;
-				if ((!dcif.dmemREN) & (!dcif.dmemWEN))
+				if ((!dcif.dmemREN) & (!real_WEN))
 					next_state = IDLE_D;
 			end
 		end
 		SNOOP_DIAOSI:
 		begin
 			next_state = IDLE_D;
+			if ((snoop_addr==lk_reg) && dcf.ccinv)
+			begin
+				next_lk_valid = 0;
+			end
+
 			if (snoop_addr.tag==l_frame[snoop_addr.idx].tag && l_frame[snoop_addr.idx].valid)
 			begin
 				next_l_valid = dcf.ccinv?0:next_l_valid;
@@ -222,6 +251,7 @@ always_comb begin : OUTPUT_LOGIC
 	dcif.flushed = 0;
 	dcf.cctrans = 0;
 	dcf.ccwrite = 0;
+	real_WEN = dcif.dmemWEN;
 
 	next_l_frame.valid = l_frame[daddr.idx].valid;
 	next_l_frame.dirty = l_frame[daddr.idx].dirty;
@@ -234,7 +264,12 @@ always_comb begin : OUTPUT_LOGIC
 	next_r_frame.tag = r_frame[daddr.idx].tag;
 	next_r_frame.data1 = r_frame[daddr.idx].data1;
 	next_r_frame.data2 = r_frame[daddr.idx].data2;
-	
+
+
+	if (sc_state && ( ((lk_reg != dcif.dmemaddr)|(lk_valid==0)) ) )  //situation that don't write 1,lk reg changed, 2, lk_valid = 0
+	begin
+		real_WEN = 0;
+	end
 
 
 	for (j = 0; j < 8; j++) begin
@@ -264,7 +299,7 @@ always_comb begin : OUTPUT_LOGIC
 					hit = 0;
 				end
 			end
-			else if (dcif.dmemWEN)
+			else if (real_WEN)
 			begin
 				if (daddr.tag==l_frame[daddr.idx].tag)
 				begin
@@ -471,6 +506,17 @@ always_comb begin : OUTPUT_LOGIC
 		end
 	endcase
 
+	if (sc_state)
+	begin
+		if ((lk_reg != dcif.dmemaddr)|(lk_valid==0))  //situation that don't write 1,lk reg changed, 2, lk_valid = 0
+		begin
+			dcif.dmemload = 0;
+		end
+		else
+		begin
+			dcif.dmemload = 1;
+		end
+	end
 end
 
 
