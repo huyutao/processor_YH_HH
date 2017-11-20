@@ -33,7 +33,6 @@ Dcache_t l_frame[7:0], r_frame[7:0],next_l_frame,next_r_frame;
 Dstate_t state,next_state;
 logic lru[7:0], next_lru[7:0];
 logic [4:0] flush_i, next_flush_i;
-word_t hit_cnt, next_hit_cnt;
 logic clean_l_dirty, clean_r_dirty, next_l_valid, next_r_valid;
 
 
@@ -42,7 +41,6 @@ always_ff @(posedge CLK, negedge nRST) begin
 	if(!nRST) begin
 		state <= IDLE_D;
 		flush_i <= 0;
-		hit_cnt <= 0;
 		for (i = 0; i < 8; i++) begin
 			 l_frame[i].valid <= 0;
 			 l_frame[i].dirty <= 0;
@@ -80,7 +78,6 @@ always_ff @(posedge CLK, negedge nRST) begin
 	end else begin
 		state <= next_state;
 		flush_i <= next_flush_i;
-		hit_cnt <= next_hit_cnt;
 		r_frame[daddr.idx].valid <= next_r_frame.valid;
 		r_frame[daddr.idx].dirty <= next_r_frame.dirty;
 		r_frame[daddr.idx].tag <= next_r_frame.tag;
@@ -238,7 +235,7 @@ always_comb begin : OUTPUT_LOGIC
 	next_r_frame.data1 = r_frame[daddr.idx].data1;
 	next_r_frame.data2 = r_frame[daddr.idx].data2;
 	
-	next_hit_cnt = hit_cnt;
+
 
 	for (j = 0; j < 8; j++) begin
 		next_lru[j] = lru[j];
@@ -253,21 +250,18 @@ always_comb begin : OUTPUT_LOGIC
 				begin
 					hit = 1;
 					dcif.dmemload = daddr.blkoff?l_frame[daddr.idx].data2:l_frame[daddr.idx].data1; 
-					next_hit_cnt = hit_cnt + 1;
 					next_lru[daddr.idx] = 1;
 				end
 				else if (daddr.tag==r_frame[daddr.idx].tag && r_frame[daddr.idx].valid)
 				begin
 					hit = 1;
 					dcif.dmemload = daddr.blkoff?r_frame[daddr.idx].data2:r_frame[daddr.idx].data1; 
-					next_hit_cnt = hit_cnt + 1;
 					next_lru[daddr.idx] = 0;
 				end
 				else
 				begin
 					miss = 1;
 					hit = 0;
-					next_hit_cnt = hit_cnt - 1;
 				end
 			end
 			else if (dcif.dmemWEN)
@@ -276,7 +270,6 @@ always_comb begin : OUTPUT_LOGIC
 				begin
 					hit = 1;
 					next_l_frame.dirty = 1;
-					next_hit_cnt = hit_cnt + 1;
 					next_lru[daddr.idx] = 1;
 					if (daddr.blkoff)
 						next_l_frame.data2 = dcif.dmemstore;
@@ -293,7 +286,6 @@ always_comb begin : OUTPUT_LOGIC
 				begin
 					hit = 1;
 					next_r_frame.dirty = 1;
-					next_hit_cnt = hit_cnt + 1;
 					next_lru[daddr.idx] = 0;
 					if (daddr.blkoff)
 						next_r_frame.data2 = dcif.dmemstore;
@@ -309,11 +301,8 @@ always_comb begin : OUTPUT_LOGIC
 				begin
 					miss = 1;
 					hit = 0;
-					next_hit_cnt = hit_cnt - 1;
 				end
 			end
-			if (dcif.halt)
-				next_hit_cnt = hit_cnt;
 		end
 		SNOOP_DIAOSI:
 		begin 
