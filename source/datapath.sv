@@ -250,6 +250,7 @@ assign npc = pc_out+4;
   //assign stif.dmemstore_i3   = (fuif.store == RDAT2_DS)? stif.rdat2_o2: stif.dmemaddr_o3;
   assign stif.halt_i3        = stif.halt_o2;
   assign stif.dmemaddr_i3    = aluif.out;
+  assign stif.d_atomic_i3    = stif.d_atomic_o2;
   //dcache
   assign dcif.dmemWEN        = stif.d_wen_o3;
   assign dcif.dmemREN        = stif.d_ren_o3;

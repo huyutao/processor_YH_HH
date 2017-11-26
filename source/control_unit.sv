@@ -172,6 +172,7 @@ begin
 		end
 		SC:
 		begin
+			cuif.W_mux = DATA_DIAOSI;
 			cuif.alu_op = ALU_ADD;
 		end
 	    SLTI:
