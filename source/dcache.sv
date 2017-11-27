@@ -123,7 +123,7 @@ always_comb begin : NEXT_LOGIC
 	clean_r_dirty = 0;
 	next_l_valid = l_frame[snoop_addr.idx].valid;
 	next_r_valid = r_frame[snoop_addr.idx].valid;
-	next_lk_valid = (lk_reg != next_lk_reg);
+	
 
 	casez (state) 
 		IDLE_D:
@@ -147,10 +147,7 @@ always_comb begin : NEXT_LOGIC
 		SNOOP_DIAOSI:
 		begin
 			next_state = IDLE_D;
-			if ((snoop_addr==lk_reg) && dcf.ccinv)
-			begin
-				next_lk_valid = 0;
-			end
+			
 
 			if (snoop_addr.tag==l_frame[snoop_addr.idx].tag && l_frame[snoop_addr.idx].valid)
 			begin
@@ -252,6 +249,7 @@ always_comb begin : OUTPUT_LOGIC
 	dcf.cctrans = 0;
 	dcf.ccwrite = 0;
 	real_WEN = dcif.dmemWEN;
+	next_lk_valid = ((lk_reg != next_lk_reg) | lk_valid);
 
 	next_l_frame.valid = l_frame[daddr.idx].valid;
 	next_l_frame.dirty = l_frame[daddr.idx].dirty;
@@ -315,7 +313,6 @@ always_comb begin : OUTPUT_LOGIC
 						dcf.cctrans = 1;
 						dcf.daddr = dcif.dmemaddr;
 					end
-
 				end
 				else if (daddr.tag==r_frame[daddr.idx].tag)
 				begin
@@ -337,10 +334,36 @@ always_comb begin : OUTPUT_LOGIC
 					miss = 1;
 					hit = 0;
 				end
+				if (lk_reg == dcif.dmemaddr)  //if write, SC or SW invalid
+				begin
+					next_lk_valid = 0;
+				end
+			end
+			else if (~real_WEN & dcif.dmemWEN)   //sc failed 
+			begin
+				if (daddr.tag==l_frame[daddr.idx].tag)
+				begin
+					hit = 1;
+				end
+				else if (daddr.tag==r_frame[daddr.idx].tag)
+				begin
+					hit = 1;
+				end
+				else
+				begin
+					miss = 1;
+					hit = 0;
+				end
 			end
 		end
 		SNOOP_DIAOSI:
 		begin 
+
+			if ((snoop_addr==lk_reg) && dcf.ccinv)
+			begin
+				next_lk_valid = 0;
+			end
+
 			dcf.cctrans = 1;
 			if (snoop_addr.tag==l_frame[snoop_addr.idx].tag && l_frame[snoop_addr.idx].valid && l_frame[snoop_addr.idx].dirty)
 			begin
