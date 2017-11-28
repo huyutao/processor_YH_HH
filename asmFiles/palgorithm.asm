@@ -43,7 +43,8 @@ main01:
   ori   $a0, $zero, $v0     #initial the seed
 push10:
   jal   comstack            #push upon the shared stack
-  beq   $st_num, $stck, push10finish
+  beq   $tt_num, $ttck, push10finish    #check the end
+  beq   $st_num, $stck, push10finish    #check 10 entries
   ori   $a0, $zero, $v0     # initial the seed
   jal   crc32               # do the random
   j     push10
@@ -94,7 +95,8 @@ lr:
   org   0x200               # second processor p1
   ori   $sp, $zero, 0x7ffc  # stack
   ori   $st, $zero, 0xff28  # initial the comstack address  ff00+4*a
-  ori   $st_end, $zero, 0xfefc #ff00-4
+  ori   $st_end, $zero, 0xfefc   #ff00-4
+  ori   $st_end_6, $zero, 0xff10 #ff28-18
   ori   $four, $zero, 0x0004#4 
   ori   $ttaddr, $zero, 0xe000   #initial the tt_num recording addr
   ori   $ttck, $zero, 0x0100 #256
@@ -114,6 +116,7 @@ main02:
   or    $t2, $zero, $a0     # the first value for min
   jal   popst_a1			# pop the 1st a1	
   add   $sum, $sum, $a0     # add a0 to sum
+  lw    $tt_num, 0($ttaddr) #load the total number
 calculate:
   or    $a0, $zero, $t1     #a0 = t1
   jal   max                 
@@ -123,15 +126,24 @@ calculate:
   or    $t2, $zero, $v0     #t2 = v0
   add   $sum, $sum, $a1     #add a1 to sum
   jal   popst_a1            #pop a1 
-  bne   $st, $st_end, calculate   #end when address reach
+  beq   $tt_num, $ttck, cal_6            #compare with 256
+  bne   $st, $st_end, calculate          #end when address reach
   ori   $a1, $zero, 0x000a  #a1 = 10
   or    $a0, $zero, $sum    #a0 = sum
+  j     cal_end
+cal_6:
+  bne   $st, $st_end_6, calculate          #end when address reach
+  ori   $a1, $zero, 0x000a  #a1 = 6
+  or    $a0, $zero, $sum    #a0 = sum
+cal_end:
   jal   divide 
   # critical code segment
   ori   $a0, $zero, lr      # move lock to arguement register
   jal   unlock              # release the lock
-  lw    $tt_num, 0($ttaddr)    #load the total number
   bne   $tt_num, $ttck, main02 #compare with 256
+  or    $max_val, $zero, $t1  #store max
+  or    $min_val, $zero, $t2  #store min
+  or    $average, $zero, $v0  #store average
   pop   $ra                 # get return address
   jr    $ra                 # return to caller
 
