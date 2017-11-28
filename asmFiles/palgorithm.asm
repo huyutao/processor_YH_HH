@@ -94,7 +94,6 @@ lr:
 #----------------------------------------------------------
   org   0x200               # second processor p1
   ori   $sp, $zero, 0x7ffc  # stack
-  ori   $st, $zero, 0xff28  # initial the comstack address  ff00+4*a
   ori   $st_end, $zero, 0xfefc   #ff00-4
   ori   $st_end_6, $zero, 0xff10 #ff28-18
   ori   $four, $zero, 0x0004#4 
@@ -107,6 +106,7 @@ lr:
 mainp1:
   push  $ra                 # save return address
 main02:
+  ori   $st, $zero, 0xff28  # initial the comstack address  ff00+4*a
   ori   $sum, $zero, 0      # initial the sum
   ori   $a0, $zero, lr      # move lock to arguement register
   jal   lock                # try to aquire the lock
