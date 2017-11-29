@@ -113,11 +113,11 @@ always_comb begin : NEXT_LOGIC
 			end
 			else if (dcif.dmemWEN & ~(sc_state & ( ((lk_reg != dcif.dmemaddr)|(lk_valid==0)) ) ))  // if real write, snoop other
 			begin
-				if (daddr.tag==l_frame[daddr.idx].tag && l_frame[daddr.idx].dirty == 0)
+				if (daddr.tag==l_frame[daddr.idx].tag && l_frame[daddr.idx].dirty == 0 && l_frame[daddr.idx].valid == 1)
 				begin
 					next_state = WENSNOOP;
 				end
-				else if (daddr.tag==r_frame[daddr.idx].tag && r_frame[daddr.idx].dirty == 0)
+				else if (daddr.tag==r_frame[daddr.idx].tag && r_frame[daddr.idx].dirty == 0 && r_frame[daddr.idx].valid == 1)
 				begin
 					next_state = WENSNOOP;
 				end
@@ -206,16 +206,28 @@ always_comb begin : NEXT_LOGIC
 			end else begin
 				next_state = HALT_D;
 			end
+			if (dcf.ccwait)
+			begin
+				next_state = SNOOP_DIAOSI;
+			end
 		end
 		FLUSH1: 
 		begin
 			if (dcf.dwait == 0) next_state = FLUSH2;
+			if (dcf.ccwait)
+			begin
+				next_state = SNOOP_DIAOSI;
+			end
 		end
 		FLUSH2:  
 		begin
 			if (dcf.dwait == 0)
 			begin
 				next_state = CLEAN;
+			end
+			if (dcf.ccwait)
+			begin
+				next_state = SNOOP_DIAOSI;
 			end
 		end
 	endcase
@@ -523,6 +535,10 @@ always_comb begin : OUTPUT_LOGIC
 				dcf.daddr = {r_frame[daddr.idx].tag,daddr.idx,3'b100};
 			end
 		end
+		CLEAN:
+		begin
+			//dcf.cctrans = 1;
+		end
 		FLUSH1: 
 		begin
 			dcf.ccwrite = 1;
@@ -537,8 +553,8 @@ always_comb begin : OUTPUT_LOGIC
 				dcf.daddr = {r_frame[flush_i].tag,flush_i[2:0],3'b000};
 				dcf.dstore = r_frame[flush_i].data1;
 			end
-			if (dcf.ccwait)
-				dcf.cctrans = 1;
+			//if (dcf.ccwait)
+				//dcf.cctrans = 1;
 		end
 		FLUSH2:  
 		begin
@@ -566,8 +582,8 @@ always_comb begin : OUTPUT_LOGIC
 				dcf.daddr = {r_frame[flush_i].tag,flush_i[2:0],3'b100};
 				dcf.dstore = r_frame[flush_i].data2;
 			end
-			if (dcf.ccwait)
-				dcf.cctrans = 1;
+			//if (dcf.ccwait)
+				//dcf.cctrans = 1;
 		end
 		HALT_D:
 		begin
