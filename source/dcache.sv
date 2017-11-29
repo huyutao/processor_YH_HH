@@ -340,6 +340,7 @@ always_comb begin : OUTPUT_LOGIC
 		end
 		WENSNOOP:
 		begin
+			dcf.ccwrite = 1;
 			dcf.cctrans = 1;
 			dcf.daddr = dcif.dmemaddr;
 			if (dcf.ccwait & dcf.ccinv)
