@@ -304,6 +304,10 @@ always_comb begin : OUTPUT_LOGIC
 								next_l_frame[daddr.idx].data2 = dcif.dmemstore;
 							else
 								next_l_frame[daddr.idx].data1 = dcif.dmemstore;
+							if (lk_reg == dcif.dmemaddr)  //if write, SC or SW invalid
+							begin
+								next_lk_valid = 0;
+							end
 						end
 						else
 						begin   // go to snoop
@@ -322,6 +326,10 @@ always_comb begin : OUTPUT_LOGIC
 								next_r_frame[daddr.idx].data2 = dcif.dmemstore;
 							else
 								next_r_frame[daddr.idx].data1 = dcif.dmemstore;
+							if (lk_reg == dcif.dmemaddr)  //if write, SC or SW invalid
+							begin
+								next_lk_valid = 0;
+							end
 						end
 						else
 						begin
