@@ -334,10 +334,6 @@ always_comb begin : OUTPUT_LOGIC
 						miss = 1;
 						hit = 0;
 					end
-					if (lk_reg == dcif.dmemaddr)  //if write, SC or SW invalid
-					begin
-						next_lk_valid = 0;
-					end
 				end
 			end
 		end
@@ -373,6 +369,10 @@ always_comb begin : OUTPUT_LOGIC
 				begin
 					miss = 1;
 					hit = 0;
+				end
+				if (lk_reg == dcif.dmemaddr)  //if write, SC or SW invalid
+				begin
+					next_lk_valid = 0;
 				end
 			end
 		end
@@ -425,7 +425,6 @@ always_comb begin : OUTPUT_LOGIC
 				dcf.dstore = l_frame[snoop_addr.idx].data2;
 				dcf.daddr = {l_frame[snoop_addr.idx].tag,snoop_addr.idx,3'b100};
 				next_lru[snoop_addr.idx] = 1;
-				next_l_frame[snoop_addr.idx].valid = 0;
 				next_l_frame[snoop_addr.idx].dirty = 0;
 			end
 			else
@@ -433,7 +432,6 @@ always_comb begin : OUTPUT_LOGIC
 				dcf.dstore = r_frame[snoop_addr.idx].data2;
 				dcf.daddr = {r_frame[snoop_addr.idx].tag,snoop_addr.idx,3'b100};
 				next_lru[snoop_addr.idx] = 0;
-				next_r_frame[snoop_addr.idx].valid = 0;
 				next_r_frame[snoop_addr.idx].dirty = 0;
 			end
 		end
@@ -463,6 +461,10 @@ always_comb begin : OUTPUT_LOGIC
 				next_r_frame[daddr.idx].data1   = dcf.dload;
 				next_r_frame[daddr.idx].valid   = 0;
 			end
+			if (dcf.daddr==lk_reg)
+			begin
+				next_lk_valid = 1;
+			end
 		end
 		LD2: 
 		begin 
@@ -477,6 +479,10 @@ always_comb begin : OUTPUT_LOGIC
 				next_r_frame[daddr.idx].data2 = dcf.dload;
 				next_r_frame[daddr.idx].tag   = daddr.tag;
 				next_r_frame[daddr.idx].valid = 1;
+			end
+			if (dcf.daddr==lk_reg)
+			begin
+				next_lk_valid = 1;
 			end
 		end
 		WB1: 
