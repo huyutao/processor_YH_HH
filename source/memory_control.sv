@@ -79,6 +79,19 @@ always_comb begin : NEXT_LOGIC
 		end
 		ICACHE_DIAOSI:
 		begin
+			if (ccif.dWEN[0] | ccif.dWEN[1])
+			begin
+				next_state = BUSWB1;
+			end 
+			else if (ccif.cctrans[0])
+			begin
+				next_state = SNOOPING1_DIAOSI;
+			end 
+			else if (ccif.cctrans[1])
+			begin 
+				next_state = SNOOPING2_DIAOSI;
+			end  // in icache might need go back to data acquire
+
 			if (ccif.ramstate == ACCESS)
 			begin
 				next_state = IDLE_B_DIAOSI;
@@ -267,6 +280,11 @@ always_comb begin : OUTPUT_LOGIC
 		end
 		SNOOPING1_DIAOSI:
 		begin 
+			if (ccif.cctrans[1])
+			begin 
+				ccif.ccwait[0] = 1;
+				ccif.ccinv[0] = 1;
+			end
 			ccif.ccwait[1] = 1;
 			ccif.ccsnoopaddr[1] = ccif.daddr[0];
 		end
@@ -276,7 +294,7 @@ always_comb begin : OUTPUT_LOGIC
 			ccif.ramREN = 1;
 			ccif.dwait[0] = (ccif.ramstate != ACCESS);
 			ccif.dload[0] = ccif.ramload;
-			ccif.ccwait[1] = 1;
+			//ccif.ccwait[1] = 1;
 		end
 		C1LD2_DIAOSI: 
 		begin 
@@ -284,7 +302,7 @@ always_comb begin : OUTPUT_LOGIC
 			ccif.ramREN = 1;
 			ccif.dwait[0] = (ccif.ramstate != ACCESS);
 			ccif.dload[0] = ccif.ramload;
-			ccif.ccwait[1] = 1;
+			//ccif.ccwait[1] = 1;
 		end
 		C1CACHE1_DIAOSI: 
 		begin
@@ -308,6 +326,11 @@ always_comb begin : OUTPUT_LOGIC
 		end
 		SNOOPING2_DIAOSI: 
 		begin
+			if (ccif.cctrans[0])
+			begin 
+				ccif.ccwait[1] = 1;
+				ccif.ccinv[1] = 1;
+			end
 			ccif.ccwait[0] = 1;
 			ccif.ccsnoopaddr[0] = ccif.daddr[1];
 		end
@@ -317,7 +340,7 @@ always_comb begin : OUTPUT_LOGIC
 			ccif.ramREN = 1;
 			ccif.dwait[1] = (ccif.ramstate != ACCESS);
 			ccif.dload[1] = ccif.ramload;
-			ccif.ccwait[0] = 1;
+			//ccif.ccwait[0] = 1;
 		end
 		C2LD2_DIAOSI: 
 		begin
@@ -325,7 +348,7 @@ always_comb begin : OUTPUT_LOGIC
 			ccif.ramREN = 1;
 			ccif.dwait[1] = (ccif.ramstate != ACCESS);
 			ccif.dload[1] = ccif.ramload;
-			ccif.ccwait[0] = 1;
+			//ccif.ccwait[0] = 1;
 		end
 		C2CACHE1_DIAOSI: 
 		begin 
