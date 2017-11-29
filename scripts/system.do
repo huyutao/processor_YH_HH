@@ -71,10 +71,6 @@ add wave -noupdate -expand -group CM0.dcache /system_tb/DUT/CPU/CM0/DCACHE/state
 add wave -noupdate -expand -group CM0.dcache /system_tb/DUT/CPU/CM0/DCACHE/next_state
 add wave -noupdate -expand -group CM0.dcache /system_tb/DUT/CPU/CM0/DCACHE/flush_i
 add wave -noupdate -expand -group CM0.dcache /system_tb/DUT/CPU/CM0/DCACHE/next_flush_i
-add wave -noupdate -expand -group CM0.dcache /system_tb/DUT/CPU/CM0/DCACHE/clean_l_dirty
-add wave -noupdate -expand -group CM0.dcache /system_tb/DUT/CPU/CM0/DCACHE/clean_r_dirty
-add wave -noupdate -expand -group CM0.dcache /system_tb/DUT/CPU/CM0/DCACHE/next_l_valid
-add wave -noupdate -expand -group CM0.dcache /system_tb/DUT/CPU/CM0/DCACHE/next_r_valid
 add wave -noupdate -expand -group CM0.dcache /system_tb/DUT/CPU/CM0/DCACHE/j
 add wave -noupdate -expand -group CM0.dcache /system_tb/DUT/CPU/CM0/DCACHE/lk_reg
 add wave -noupdate -expand -group CM0.dcache /system_tb/DUT/CPU/CM0/DCACHE/next_lk_reg
@@ -167,7 +163,7 @@ add wave -noupdate -group DP1 /system_tb/DUT/CPU/DP1/EM/em/imemload_o1
 add wave -noupdate -group DP1 /system_tb/DUT/CPU/DP1/EM/em/dmemstore_i3
 add wave -noupdate -group DP1 /system_tb/DUT/CPU/DP1/EM/em/dmemstore_o3
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {1760603 ps} 0}
+WaveRestoreCursors {{Cursor 1} {1462131 ps} 0}
 quietly wave cursor active 1
 configure wave -namecolwidth 152
 configure wave -valuecolwidth 161
@@ -183,4 +179,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits ns
 update
-WaveRestoreZoom {1174390 ps} {3784165 ps}
+WaveRestoreZoom {0 ps} {2609775 ps}
