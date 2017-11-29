@@ -125,7 +125,7 @@ always_comb begin : NEXT_LOGIC
 		end
 		WENSNOOP:
 		begin
-			if (dcf.ccwait & dcf.ccinv)
+			if (~dcf.ccwait & dcf.ccinv)
 			begin
 				next_state = IDLE_D;
 			end
@@ -161,15 +161,18 @@ always_comb begin : NEXT_LOGIC
 		begin
 			if (dcf.ccwait)
 			begin
-				if (~dcf.ccinv)  // arbitration failed
-					next_state = SNOOP_DIAOSI;
-				else
+				next_state = IDLE_D;
+			end
+			else
+			begin
+				if (dcf.ccinv)  // arbitration success
 				begin
 					if (dcf.dwait == 0)  //data valid
 						next_state = LD2;
 					else
 						next_state = LD1;
 				end
+
 			end
 		end
 		LD1:
@@ -343,7 +346,7 @@ always_comb begin : OUTPUT_LOGIC
 			dcf.ccwrite = 1;
 			dcf.cctrans = 1;
 			dcf.daddr = dcif.dmemaddr;
-			if (dcf.ccwait & dcf.ccinv)
+			if (~dcf.ccwait & dcf.ccinv)
 			begin
 				if (daddr.tag==l_frame[daddr.idx].tag)
 				begin

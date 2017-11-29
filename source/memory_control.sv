@@ -282,7 +282,7 @@ always_comb begin : OUTPUT_LOGIC
 		begin 
 			if (ccif.cctrans[1])
 			begin 
-				ccif.ccwait[0] = 1;
+				ccif.ccwait[0] = 0;
 				ccif.ccinv[0] = 1;
 			end
 			ccif.ccwait[1] = 1;
@@ -328,7 +328,7 @@ always_comb begin : OUTPUT_LOGIC
 		begin
 			if (ccif.cctrans[0])
 			begin 
-				ccif.ccwait[1] = 1;
+				ccif.ccwait[1] = 0;
 				ccif.ccinv[1] = 1;
 			end
 			ccif.ccwait[0] = 1;
