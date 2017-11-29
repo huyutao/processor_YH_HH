@@ -305,7 +305,7 @@ always_comb begin : OUTPUT_LOGIC
 				end
 				else
 					begin
-					if (daddr.tag==l_frame[daddr.idx].tag)
+					if (daddr.tag==l_frame[daddr.idx].tag && l_frame[daddr.idx].valid == 1)
 					begin
 						if(l_frame[daddr.idx].dirty == 1)
 						begin
@@ -327,7 +327,7 @@ always_comb begin : OUTPUT_LOGIC
 							dcf.daddr = dcif.dmemaddr;
 						end
 					end
-					else if (daddr.tag==r_frame[daddr.idx].tag)
+					else if (daddr.tag==r_frame[daddr.idx].tag && r_frame[daddr.idx].valid == 1)
 					begin
 						if(r_frame[daddr.idx].dirty == 1)
 						begin
