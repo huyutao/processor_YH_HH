@@ -217,6 +217,8 @@ always_comb begin : OUTPUT_LOGIC
 	casez (state) 
 		IDLE_B_DIAOSI:
 		begin
+			ccif.ccinv[0] = 0;
+			ccif.ccinv[1] = 0;
 			//
 		end
 		BUSWB1:
@@ -228,7 +230,7 @@ always_comb begin : OUTPUT_LOGIC
 				ccif.ramWEN = 1;
 				ccif.ramstore = ccif.dstore[0];
 				ccif.dwait[0] = (ccif.ramstate != ACCESS);
-				//ccif.ccwait[1] = 1;
+				ccif.ccwait[1] = 1;
 			end
 			else if (ccif.dWEN[1])
 			begin
@@ -237,7 +239,7 @@ always_comb begin : OUTPUT_LOGIC
 				ccif.ramWEN = 1;
 				ccif.ramstore = ccif.dstore[1];
 				ccif.dwait[1] = (ccif.ramstate != ACCESS);
-				//ccif.ccwait[0] = 1;
+				ccif.ccwait[0] = 1;
 			end
 		end
 		BUSWB2:
@@ -249,7 +251,7 @@ always_comb begin : OUTPUT_LOGIC
 				ccif.ramWEN = 1;
 				ccif.ramstore = ccif.dstore[0];
 				ccif.dwait[0] = (ccif.ramstate != ACCESS);
-				//ccif.ccwait[1] = 1;
+				ccif.ccwait[1] = 1;
 			end
 			else if (ccif.dWEN[1])
 			begin
@@ -258,7 +260,7 @@ always_comb begin : OUTPUT_LOGIC
 				ccif.ramWEN = 1;
 				ccif.ramstore = ccif.dstore[1];
 				ccif.dwait[1] = (ccif.ramstate != ACCESS);
-				//ccif.ccwait[0] = 1;
+				ccif.ccwait[0] = 1;
 			end
 		end
 		ICACHE_DIAOSI:

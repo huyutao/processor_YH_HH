@@ -246,7 +246,7 @@ always_comb begin : OUTPUT_LOGIC
 	dcif.flushed = 0;
 	dcf.cctrans = 0;
 	dcf.ccwrite = 0;
-	next_lk_valid = ((lk_reg != next_lk_reg) | lk_valid);
+	next_lk_valid = ((lk_reg != next_lk_reg) | lk_valid | ll_state);
 
 	for (j = 0;  j< 8; j++) begin
 		next_l_frame[j].valid = l_frame[j].valid;
@@ -396,7 +396,6 @@ always_comb begin : OUTPUT_LOGIC
 				end
 			end
 		end
-
 		SNOOP_DIAOSI:
 		begin 
 			dcf.cctrans = 1;
@@ -528,11 +527,13 @@ always_comb begin : OUTPUT_LOGIC
 			begin
 				dcf.dstore = l_frame[daddr.idx].data2;
 				dcf.daddr = {l_frame[daddr.idx].tag,daddr.idx,3'b100};
+				next_l_frame[daddr.idx].dirty = 0;
 			end
 			else
 			begin
 				dcf.dstore = r_frame[daddr.idx].data2;
 				dcf.daddr = {r_frame[daddr.idx].tag,daddr.idx,3'b100};
+				next_r_frame[daddr.idx].dirty = 0;
 			end
 		end
 		CLEAN:
