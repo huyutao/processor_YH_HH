@@ -452,7 +452,6 @@ always_comb begin : OUTPUT_LOGIC
 				dcf.daddr = {l_frame[snoop_addr.idx].tag,snoop_addr.idx,3'b100};
 				next_lru[snoop_addr.idx] = 1;
 				next_l_frame[snoop_addr.idx].dirty = 0;
-				next_l_frame[snoop_addr.idx].tag = 0;
 			end
 			else
 			begin
@@ -460,7 +459,6 @@ always_comb begin : OUTPUT_LOGIC
 				dcf.daddr = {r_frame[snoop_addr.idx].tag,snoop_addr.idx,3'b100};
 				next_lru[snoop_addr.idx] = 0;
 				next_r_frame[snoop_addr.idx].dirty = 0;
-				next_r_frame[snoop_addr.idx].tag = 0;
 			end
 		end
 		LDSNOOP:
