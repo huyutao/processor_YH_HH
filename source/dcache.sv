@@ -129,6 +129,10 @@ always_comb begin : NEXT_LOGIC
 			begin
 				next_state = IDLE_D;
 			end
+			if (dcf.ccwait)
+			begin
+				next_state = IDLE_D;
+			end
 		end
 		SNOOP_DIAOSI:
 		begin
@@ -310,7 +314,6 @@ always_comb begin : OUTPUT_LOGIC
 						if(l_frame[daddr.idx].dirty == 1)
 						begin
 							hit = 1;
-							next_l_frame[daddr.idx].dirty = 1;
 							next_lru[daddr.idx] = 1;
 							if (daddr.blkoff)
 								next_l_frame[daddr.idx].data2 = dcif.dmemstore;
@@ -332,7 +335,6 @@ always_comb begin : OUTPUT_LOGIC
 						if(r_frame[daddr.idx].dirty == 1)
 						begin
 							hit = 1;
-							next_r_frame[daddr.idx].dirty = 1;
 							next_lru[daddr.idx] = 0;
 							if (daddr.blkoff)
 								next_r_frame[daddr.idx].data2 = dcif.dmemstore;
@@ -399,7 +401,6 @@ always_comb begin : OUTPUT_LOGIC
 		SNOOP_DIAOSI:
 		begin 
 			dcf.cctrans = 1;
-
 			if (snoop_addr.tag==l_frame[snoop_addr.idx].tag && l_frame[snoop_addr.idx].valid)
 			begin
 				next_l_frame[snoop_addr.idx].valid = dcf.ccinv?0:next_l_frame[snoop_addr.idx].valid;
@@ -417,7 +418,7 @@ always_comb begin : OUTPUT_LOGIC
 				end
 			end
 
-			if ((snoop_addr==lk_reg) && dcf.ccinv)
+			if ((snoop_addr[31:2]==lk_reg[31:2]) && dcf.ccinv)
 			begin
 				next_lk_valid = 0;
 			end

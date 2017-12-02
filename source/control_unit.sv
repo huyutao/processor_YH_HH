@@ -54,7 +54,7 @@ begin
     // RDAT2_DIAOSI, SHAMT_DIAOSI, EXT_DIAOSI
     if(opcode==RTYPE || opcode==BNE || opcode==BEQ) 
     begin
-    	if(funct==SLL || funct==SRL)
+    	if((funct==SLL || funct==SRL) && opcode==RTYPE)
     	begin
     		cuif.ALUSrc = SHAMT_DIAOSI;
     	end
