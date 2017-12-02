@@ -101,17 +101,17 @@ always_comb begin : NEXT_LOGIC
 		begin 
 			if (ccif.cctrans[1])
 			begin 
-				if (ccif.dREN[0] == 0)
-				begin
-					next_state = IDLE_B_DIAOSI;
-				end
-				else if (ccif.ccwrite[1])
+				if (ccif.ccwrite[1])
 				begin 
 					next_state = C1CACHE1_DIAOSI;
 				end
-				else
-				begin 
+				else if (ccif.dREN[0] == 1)
+				begin
 					next_state = C1LD1_DIAOSI;
+				end
+				else 
+				begin 
+					next_state = IDLE_B_DIAOSI;
 				end
 			end
 		end
@@ -147,17 +147,17 @@ always_comb begin : NEXT_LOGIC
 		begin
 			if (ccif.cctrans[0])
 			begin 
-				if (ccif.dREN[1] == 0)
-				begin
-					next_state = IDLE_B_DIAOSI;
-				end
-				else if (ccif.ccwrite[0])
+				if (ccif.ccwrite[0])
 				begin 
 					next_state = C2CACHE1_DIAOSI;
 				end
-				else
-				begin 
+				else if (ccif.dREN[1] == 1)
+				begin
 					next_state = C2LD1_DIAOSI;
+				end
+				else 
+				begin 
+					next_state = IDLE_B_DIAOSI;
 				end
 			end
 		end
@@ -282,6 +282,10 @@ always_comb begin : OUTPUT_LOGIC
 		end
 		SNOOPING1_DIAOSI:
 		begin 
+			if (ccif.ccwrite[1])
+			begin 
+				ccif.ccsnoopaddr[0] = ccif.daddr[0];
+			end
 			if (ccif.cctrans[1])
 			begin 
 				ccif.ccwait[0] = 0;
@@ -313,8 +317,8 @@ always_comb begin : OUTPUT_LOGIC
 			ccif.ramWEN = 1;
 			ccif.ramstore = ccif.dstore[1];
 			ccif.dwait[1] = (ccif.ramstate != ACCESS);
-			ccif.dload[0] = ccif.dstore[1];
 			ccif.dwait[0] = (ccif.ramstate != ACCESS);
+			ccif.dload[0] = ccif.dstore[1];
 		end
 		C1CACHE2_DIAOSI: 
 		begin
@@ -328,6 +332,10 @@ always_comb begin : OUTPUT_LOGIC
 		end
 		SNOOPING2_DIAOSI: 
 		begin
+			if (ccif.ccwrite[0])
+			begin 
+				ccif.ccsnoopaddr[0] = ccif.daddr[0];
+			end
 			if (ccif.cctrans[0])
 			begin 
 				ccif.ccwait[1] = 0;
